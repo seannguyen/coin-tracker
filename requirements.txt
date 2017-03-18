@@ -1,0 +1,2 @@
+coinbase==2.0.6
+elasticsearch==5.2.0
