@@ -5,7 +5,6 @@ from elasticsearch import Elasticsearch
 
 coin_base_client = Client('no-api-key', 'no-api-secret')
 bit_coin_price = coin_base_client.get_spot_price(currency_pair = 'BTC-USD')
-print(bit_coin_price)
 
 elasticsearch = Elasticsearch()
 body = {
