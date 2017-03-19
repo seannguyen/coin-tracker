@@ -1,32 +1,48 @@
-from coinbase.wallet.client import Client
 from datetime import datetime
-from elasticsearch import Elasticsearch
+import coin_base_client
+import es_client
 
-coin_base_client = Client('no-api-key', 'no-api-secret')
-bit_coin_price = coin_base_client.get_spot_price()
 
-index_name = 'coinbase-price'
+class BitCoinPriceTracker:
+    __ES_INDEX_NAME = 'coinbase-price'
 
-client = Elasticsearch()
+    def __init__(self):
+        self.__coin_base_client = coin_base_client.client()
+        self.__es_client = es_client.client()
 
-if not client.indices.exists(index=index_name):
-  index_config = {
-    "mappings": {
-      "price_data": {
-        "properties": {
-          "price": {
-            "type": "float",
-          }
+    def snapshot_price(self):
+        price_data = self.__get_bit_coin_price()
+        self.__save_bit_coin_price(price_data.amount, price_data.currency)
+
+    def __get_bit_coin_price(self):
+        return self.__coin_base_client.get_spot_price(urrency_pair = 'BTC-SGD')
+
+    def __save_bit_coin_price(self, price, currency):
+        self.__create_es_index()
+
+        body = {
+            "price": float(price),
+            "currency": currency,
+            "timestamp": datetime.now()
         }
-      }
-    }
-  }
-  client.indices.create(index=index_name, body=index_config)
+        self.__es_client.index(index=BitCoinPriceTracker.__ES_INDEX_NAME, doc_type="price_data", body=body)
 
-body = {
-  "price": float(bit_coin_price.amount),
-  "currency": bit_coin_price.currency,
-  "timestamp": datetime.now()
-}
+    def __create_es_index(self):
+        indices = self.__es_client.indices
+        if not indices.exists(index=BitCoinPriceTracker.__ES_INDEX_NAME):
+            index_config = {
+                "mappings": {
+                    "price_data": {
+                        "properties": {
+                            "price": {
+                                "type": "float",
+                            }
+                        }
+                    }
+                }
+            }
+            indices.create(index=BitCoinPriceTracker.__ES_INDEX_NAME, body=index_config)
 
-client.index(index="coinbase-price", doc_type="test-type", body=body)
+
+if __name__ == '__main__':
+    BitCoinPriceTracker().snapshot_price()
