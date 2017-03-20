@@ -1,5 +1,4 @@
 from datetime import datetime
-from lib.services import coin_base, elastic_search
 from lib.pollers.base import BasePoller
 
 

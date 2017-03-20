@@ -1,5 +1,4 @@
 from datetime import datetime
-from lib.services import coin_base, elastic_search
 from lib.pollers.base import BasePoller
 
 
@@ -12,6 +11,7 @@ class BalancePoller(BasePoller):
     def poll_balance(self):
         accounts = self._coin_base_client.get_accounts().data
         for account in accounts:
+            account['timestamp'] = datetime.now()
             account['balance']['amount'] = float(account['balance']['amount'])
             account['native_balance']['amount'] = float(account['native_balance']['amount'])
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=account)
