@@ -13,7 +13,7 @@ class PricePoller(BasePoller):
         self.__save_bit_coin_price(price_data.amount, price_data.currency)
 
     def __get_bit_coin_price(self):
-        return self._coin_base_client.get_spot_price(currency_pair = 'BTC-SGD')
+        return self._coin_base_client.get_spot_price(currency_pair='BTC-USD')
 
     def __save_bit_coin_price(self, price, currency):
         body = {
