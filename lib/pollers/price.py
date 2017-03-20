@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 import requests
-import json
 from lib.pollers.base import BasePoller
 
 
@@ -20,7 +19,7 @@ class PricePoller(BasePoller):
         response = requests.get('https://api.coinbase.com/v2/prices/BTC-SGD/spot')
         if not response.ok:
             return False
-        price_data = json.loads(response.content)['data']
+        price_data = response.json()['data']
         logging.info('CoinBase BitCoin price: %s' % (price_data))
         return price_data
 
