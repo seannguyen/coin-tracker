@@ -1,4 +1,7 @@
 from datetime import datetime
+import logging
+import requests
+import json
 from lib.pollers.base import BasePoller
 
 
@@ -10,12 +13,19 @@ class PricePoller(BasePoller):
 
     def poll_price(self):
         price_data = self.__get_bit_coin_price()
-        self.__save_bit_coin_price(price_data.amount, price_data.currency)
+        self.__save_bit_coin_price(price_data['amount'], price_data['currency'])
 
     def __get_bit_coin_price(self):
-        return self._coin_base_client.get_spot_price(currency_pair='BTC-USD')
+        # response = self._coin_base_client.get_spot_price(currency_pair='BTC-SGD')
+        response = requests.get('https://api.coinbase.com/v2/prices/BTC-SGD/spot')
+        if not response.ok:
+            return False
+        price_data = json.loads(response.content)['data']
+        logging.info('CoinBase BitCoin price: %s' % (price_data))
+        return price_data
 
     def __save_bit_coin_price(self, price, currency):
+        logging.info('Saving CoinBase balance to ElasticSearch')
         body = {
             "price": float(price),
             "currency": currency,

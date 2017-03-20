@@ -1,4 +1,7 @@
 from datetime import datetime
+import logging
+import json
+
 from lib.pollers.base import BasePoller
 
 
@@ -9,6 +12,7 @@ class BalancePoller(BasePoller):
         super(BalancePoller, self).__init__()
 
     def poll_balance(self):
+        logging.info('Start query for CoinBase balance')
         accounts = self._coin_base_client.get_accounts().data
         for account in accounts:
             account['timestamp'] = datetime.now()
