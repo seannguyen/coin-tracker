@@ -1,6 +1,6 @@
 from datetime import datetime
 from lib.services import coin_base, elastic_search
-from lib.poller.base import BasePoller
+from lib.pollers.base import BasePoller
 
 
 class BalancePoller(BasePoller):
