@@ -1,5 +1,6 @@
 from coinbase.wallet.client import Client
-import configs
+
+from lib import configs
 
 
 def client():
