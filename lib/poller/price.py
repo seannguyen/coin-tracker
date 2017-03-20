@@ -1,20 +1,20 @@
 from datetime import datetime
-from services import coin_base, elastic_search
+from lib.services import coin_base, elastic_search
+from lib.poller.base import BasePoller
 
 
-class BitCoinPriceTracker:
+class PricePoller(BasePoller):
     __ES_INDEX_NAME = 'coinbase-price'
 
     def __init__(self):
-        self.__coin_base_client = coin_base.client()
-        self.__es_client = elastic_search.client()
+        super(PricePoller, self).__init__()
 
-    def snapshot_price(self):
+    def poll_price(self):
         price_data = self.__get_bit_coin_price()
         self.__save_bit_coin_price(price_data.amount, price_data.currency)
 
     def __get_bit_coin_price(self):
-        return self.__coin_base_client.get_spot_price(urrency_pair = 'BTC-SGD')
+        return self._coin_base_client.get_spot_price(currency_pair = 'BTC-SGD')
 
     def __save_bit_coin_price(self, price, currency):
         body = {
@@ -22,7 +22,7 @@ class BitCoinPriceTracker:
             "currency": currency,
             "timestamp": datetime.now()
         }
-        self.__es_client.index(index=BitCoinPriceTracker.__ES_INDEX_NAME, doc_type="price_data", body=body)
+        self._es_client.index(index=PricePoller.__ES_INDEX_NAME, doc_type="price_data", body=body)
 
 if __name__ == '__main__':
-    BitCoinPriceTracker().snapshot_price()
+    PricePoller().poll_price()
