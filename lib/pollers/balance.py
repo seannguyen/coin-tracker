@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-import json
 
 from lib.pollers.base import BasePoller
 
