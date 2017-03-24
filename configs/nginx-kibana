@@ -1,5 +1,5 @@
 upstream app {
-    server 128.199.151.119:5601 fail_timeout=0;
+    server localhost:5601 fail_timeout=0;
 }
 
 server {
