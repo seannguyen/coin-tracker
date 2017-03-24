@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
 import logging
-import requests
-from lib.pollers.base import BasePoller
+from lib.pollers.price import PricePoller
 
 
-class PriceChangePoller(BasePoller):
-    __ES_INDEX_NAME = 'coinbase-price'
+class PriceChangePoller(PricePoller):
+    __ES_INDEX_NAME = 'coinbase-price-change'
     __PRICE_CHANGE_THRESHOLD = 0.05
     __PRICE_CHANGE_TIME_RANGE_HOURS = 10
 
@@ -13,30 +12,54 @@ class PriceChangePoller(BasePoller):
         super(PriceChangePoller, self).__init__()
 
     def poll_price_change(self):
-        data1 = requests.get('https://api.coinbase.com/v2/prices/BTC-SGD/spot',
-                     params={'date': '2017-03-21T01:24:53.169327'}).json()
-        data2 = requests.get('https://api.coinbase.com/v2/prices/BTC-SGD/spot',
-                             params={'date':'2017-03-21T02:24:53.169327'}).json()
+        logging.info('Start polling price change')
+        past_price_data = self.__get_past_price()
+        if not past_price_data:
+            return
 
-        print(data1)
-        print(data2)
-        # current_time = datetime.utcnow()
-        # past_time = current_time - timedelta(hours=PriceChangePoller.__PRICE_CHANGE_TIME_RANGE_HOURS)
-        # past_price = self.__get_bit_coin_price(past_time)
-        # current_price = self.__get_bit_coin_price(current_time)
-        #
-        # lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
-        # upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
-        # if lower_threshold < current_price / past_price < upper_threshold:
-        #     pass
+        logging.info('Price %s hours ago: %s %s' % (self.__PRICE_CHANGE_TIME_RANGE_HOURS,
+                                                   past_price_data['currency'],
+                                                   past_price_data['price']))
+        current_price_data = self.__get_current_price()
+        logging.info('Price at the moment: %s %s' % (current_price_data['currency'], current_price_data['amount']))
 
-    def __get_bit_coin_price(self, time):
-        print(time.isoformat())
-        response = requests.get('https://api.coinbase.com/v2/prices/BTC-SGD/spot', params={'date': time.isoformat()})
-        price_data = response.json()['data']
-        price = float(price_data['amount'])
-        print(price)
-        return price
+        change_ratio = float(current_price_data['amount']) / past_price_data['price']
+        logging.info('Price change ratio: %s' % change_ratio)
+        self.__save(change_ratio)
+        # self.__alert(change_ratio)
+
+    def __save(self, change_ratio):
+        logging.info('Saving Bit Coin change ratio to ElasticSearch')
+        body = {
+            "change_ratio": float(change_ratio),
+            "timestamp": datetime.now()
+        }
+        self._es_client.index(index=self.__ES_INDEX_NAME, doc_type="price_change_data", body=body)
+
+    def __alert(self, change_ratio):
+        lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
+        upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
+        if lower_threshold < change_ratio < upper_threshold:
+            pass
+
+    def __get_past_price(self):
+        query_body = {
+            'query': {
+                'range': {
+                    'timestamp': {
+                        'gte': (datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS)).isoformat(),
+                        'lte': (
+                            datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS + 1)).isoformat()
+                    }
+                }
+            }
+        }
+        res = self._es_client.search(index='coinbase-price', body=query_body)
+        hits = res['hits']['hits']
+        return hits[0]['_source'] if hits else None
+
+    def __get_current_price(self):
+        return self._get_bit_coin_price()
 
 if __name__ == '__main__':
     PriceChangePoller().poll_price_change()

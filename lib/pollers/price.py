@@ -11,10 +11,10 @@ class PricePoller(BasePoller):
         super(PricePoller, self).__init__()
 
     def poll_price(self):
-        price_data = self.__get_bit_coin_price()
+        price_data = self._get_bit_coin_price()
         self.__save_bit_coin_price(price_data['amount'], price_data['currency'])
 
-    def __get_bit_coin_price(self):
+    def _get_bit_coin_price(self):
         # response = self._coin_base_client.get_spot_price(currency_pair='BTC-SGD')
         response = requests.get('https://api.coinbase.com/v2/prices/BTC-SGD/spot')
         if not response.ok:
