@@ -7,8 +7,7 @@ server {
     server_name kibana.seannguyentrong.com;
 
     auth_basic "Restricted";
-    auth_basic_user_file /srv/coinbase-tracker/config/htpasswd;
-
+    auth_basic_user_file /srv/coinbase-tracker/configs/htpasswd;
 
     location / {
         proxy_pass http://app;
