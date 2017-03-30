@@ -28,7 +28,7 @@ class PricePoller(BasePoller):
         body = {
             "price": float(price),
             "currency": currency,
-            "timestamp": datetime.now()
+            "timestamp": datetime.utcnow()
         }
         self._es_client.index(index=PricePoller.__ES_INDEX_NAME, doc_type="price_data", body=body)
 

@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
 import logging
+import requests
+
+import lib.configs as configs
 from lib.pollers.price import PricePoller
 
 
@@ -26,13 +29,13 @@ class PriceChangePoller(PricePoller):
         change_ratio = float(current_price_data['amount']) / past_price_data['price']
         logging.info('Price change ratio: %s' % change_ratio)
         self.__save(change_ratio)
-        # self.__alert(change_ratio)
+        self.__alert(change_ratio)
 
     def __save(self, change_ratio):
         logging.info('Saving Bit Coin change ratio to ElasticSearch')
         body = {
             "change_ratio": float(change_ratio),
-            "timestamp": datetime.now()
+            "timestamp": datetime.utcnow()
         }
         self._es_client.index(index=self.__ES_INDEX_NAME, doc_type="price_change_data", body=body)
 
@@ -40,7 +43,10 @@ class PriceChangePoller(PricePoller):
         lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         if lower_threshold < change_ratio < upper_threshold:
-            pass
+            payload = {"text": "Bit Coin price is changing quickly %s%% compare to %s hours ago"
+                               % (round(change_ratio * 100, 2), self.__PRICE_CHANGE_TIME_RANGE_HOURS)}
+            requests.post(configs.SLACK_WEB_HOOK, data={'payload': str(payload)})
+            
 
     def __get_past_price(self):
         query_body = {
@@ -49,7 +55,7 @@ class PriceChangePoller(PricePoller):
                     'timestamp': {
                         'gte': (datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS)).isoformat(),
                         'lte': (
-                            datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS + 1)).isoformat()
+                            datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS - 1)).isoformat()
                     }
                 }
             }

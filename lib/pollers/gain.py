@@ -47,7 +47,7 @@ class GainPoller(BasePoller):
 
     def __save(self, gain, type, account_name):
         body = {
-            'timestamp': datetime.now(),
+            'timestamp': datetime.utcnow(),
             'account_name': account_name,
             'type': type,
             'gain': gain
