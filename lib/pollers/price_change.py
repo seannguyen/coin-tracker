@@ -42,7 +42,7 @@ class PriceChangePoller(PricePoller):
     def __alert(self, change_ratio):
         lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
-        if lower_threshold < change_ratio < upper_threshold:
+        if not(lower_threshold < change_ratio < upper_threshold):
             payload = {"text": "Bit Coin price is changing quickly %s%% compare to %s hours ago"
                                % (round(change_ratio * 100, 2), self.__PRICE_CHANGE_TIME_RANGE_HOURS)}
             requests.post(configs.SLACK_WEB_HOOK, data={'payload': str(payload)})
