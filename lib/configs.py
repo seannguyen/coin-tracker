@@ -7,5 +7,8 @@ logging.basicConfig(filename='coinbase-tracker.log',
                     format='%(asctime)-15s %(message)s')
 
 # CoinBase
-API_KEY = 'qZZTKMz8DXuGajSl'
-API_SECRET = os.getenv('API_SECRET', 'dummy_key')
+API_KEY = 'dummy_key'
+API_SECRET = 'dummy_secret'
+
+#Slack Webhook
+SLACK_WEB_HOOK = 'dummy_url'
