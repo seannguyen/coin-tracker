@@ -1,3 +1,4 @@
 *.pyc
 env/
 coinbase-tracker.log
+lib/config.py
