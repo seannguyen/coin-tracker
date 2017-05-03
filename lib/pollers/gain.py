@@ -2,7 +2,6 @@ from datetime import datetime
 import logging
 
 from lib.pollers.base import BasePoller
-import json
 
 class GainPoller(BasePoller):
     __ES_INDEX_NAME = 'coinbase-gain'
