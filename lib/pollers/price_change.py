@@ -17,6 +17,7 @@ class PriceChangePoller(PricePoller):
     def poll_price_change(self):
         self.__poll_and_alert_price_change('BTC')
         self.__poll_and_alert_price_change('ETH')
+        self.__poll_and_alert_price_change('LTC')
 
     def __poll_and_alert_price_change(self, type):
         logging.info('Start polling %s price change' % type)
@@ -28,7 +29,7 @@ class PriceChangePoller(PricePoller):
                                                        self.__PRICE_CHANGE_TIME_RANGE_HOURS,
                                                        past_price_data['currency'],
                                                        past_price_data['price']))
-        current_price_data = self.__get_current_price()
+        current_price_data = self.__get_current_price(type)
         logging.info('%s price at the moment: %s %s' % (type,
                                                         current_price_data['currency'],
                                                         current_price_data['amount']))
@@ -74,8 +75,16 @@ class PriceChangePoller(PricePoller):
         hits = res['hits']['hits']
         return hits[0]['_source'] if hits else None
 
-    def __get_current_price(self):
-        return self._get_bit_coin_price()
+    def __get_current_price(self, type):
+        if type == 'BTC':
+            return self._get_bit_coin_price()
+        elif type == 'ETH':
+            return self._get_ethereum_price()
+        elif type == 'LTC':
+            return self._get_lite_coin_price()
+        else:
+            pass
+
 
 if __name__ == '__main__':
     PriceChangePoller().poll_price_change()
