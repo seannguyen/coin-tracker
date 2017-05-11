@@ -13,6 +13,10 @@ class PricePoller(BasePoller):
     def poll_price(self):
         price_data = self._get_bit_coin_price()
         self.__save_bit_coin_price(price_data['amount'], price_data['currency'])
+        price_data = self._get_ethereum_price()
+        self.__save_ethereum_price(price_data['amount'], price_data['currency'])
+        price_data = self._get_lite_coin_price()
+        self.__save_lite_coin_price(price_data['amount'], price_data['currency'])
 
     def _get_bit_coin_price(self):
         price_data = self.__get_price_by_url('https://api.coinbase.com/v2/prices/BTC-SGD/spot')
@@ -22,6 +26,11 @@ class PricePoller(BasePoller):
     def _get_ethereum_price(self):
         price_data = self.__get_price_by_url('https://api.coinbase.com/v2/prices/ETH-SGD/spot')
         logging.info('CoinBase Ethereum price: %s' % (price_data))
+        return price_data
+
+    def _get_lite_coin_price(self):
+        price_data = self.__get_price_by_url('https://api.coinbase.com/v2/prices/LTC-SGD/spot')
+        logging.info('CoinBase LiteCoin price: %s' % (price_data))
         return price_data
 
     def __get_price_by_url(self, url):
@@ -37,6 +46,9 @@ class PricePoller(BasePoller):
 
     def __save_ethereum_price(self, price, currency):
         self.__save_price(price, currency, 'ETH')
+
+    def __save_lite_coin_price(self, price, currency):
+        self.__save_price(price, currency, 'LTC')
 
     def __save_price(self, price, currency, type):
         logging.info('Saving CoinBase %s price to ElasticSearch' % type)
