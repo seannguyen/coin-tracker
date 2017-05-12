@@ -14,7 +14,7 @@ class BalancePoller(BasePoller):
         logging.info('Start query for CoinBase balance')
         accounts = self._coin_base_client.get_accounts().data
         for account in accounts:
-            logging.info('Current %s balance: %s %s' % (account['balance']['currency'],
+            logging.info('Current %s balance: %s %s' % (account['name'],
                                                        account['native_balance']['currency'],
                                                        account['native_balance']['amount']))
             account['timestamp'] = datetime.utcnow()
