@@ -59,16 +59,25 @@ class PriceChangePoller(PricePoller):
     def __get_past_price(self, type):
         query_body = {
             'query': {
-                'match': {
-                    "type": type
-                },
-                'range': {
-                    'timestamp': {
-                        'gte': (datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS)).isoformat(),
-                        'lte': (
-                            datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS - 1)).isoformat()
-                    }
+                'bool': {
+                    'must': [
+                        {
+                            'match': {
+                                "type": type
+                            }
+                        },
+                        {
+                            'range': {
+                                'timestamp': {
+                                    'gte': (datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS)).isoformat(),
+                                    'lte': (
+                                        datetime.utcnow() - timedelta(hours=self.__PRICE_CHANGE_TIME_RANGE_HOURS - 1)).isoformat()
+                                }
+                            }
+                        }
+                    ]
                 }
+
             }
         }
         res = self._es_client.search(index='coinbase-price', body=query_body)
