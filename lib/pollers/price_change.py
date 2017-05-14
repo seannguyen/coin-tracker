@@ -53,7 +53,8 @@ class PriceChangePoller(PricePoller):
         self._es_client.index(index=self.__ES_INDEX_NAME, doc_type="price_change_data", body=body)
 
     def __alert(self, change_ratio, type):
-        if self._redis_client.exists(PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY):
+        redis_notification_suspension_key = "%s:%s" % (PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY, type)
+        if self._redis_client.exists(redis_notification_suspension_key):
             return
         lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
@@ -62,7 +63,7 @@ class PriceChangePoller(PricePoller):
                                % (type, round(change_ratio * 100, 2), self.__PRICE_CHANGE_TIME_RANGE_HOURS)}
             requests.post(configs.SLACK_WEB_HOOK, data={'payload': str(payload)})
             self._redis_client.set(
-                "%s:%s" % (PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY, type),
+                redis_notification_suspension_key,
                 True,
                 ex=PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY_EXPIRING_TIME)
 
