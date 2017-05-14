@@ -17,3 +17,4 @@ ELASTIC_SEARCH_HOST = 'dummy'
 # Redis
 REDIS_HOST = 'dummy'
 REDIS_PORT = 'dummy'
+REDIS_PASSWORD = 'dummy'
