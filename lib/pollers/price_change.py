@@ -4,15 +4,19 @@ import requests
 
 import lib.configs as configs
 from lib.pollers.price import PricePoller
+import lib.services.redis_service as redis_service
 
 
 class PriceChangePoller(PricePoller):
     __ES_INDEX_NAME = 'coinbase-price-change'
     __PRICE_CHANGE_THRESHOLD = 0.05
     __PRICE_CHANGE_TIME_RANGE_HOURS = 10
+    __NOTIFICATION_SUSPENSION_KEY = 'PRICE_CHANGE_NOTIFICATION_SUSPENSION'
+    __NOTIFICATION_SUSPENSION_KEY_EXPIRING_TIME = 60 * 60 * 5
 
     def __init__(self):
         super(PriceChangePoller, self).__init__()
+        self._redis_client = redis_service.client()
 
     def poll_price_change(self):
         self.__poll_and_alert_price_change('BTC')
@@ -49,12 +53,19 @@ class PriceChangePoller(PricePoller):
         self._es_client.index(index=self.__ES_INDEX_NAME, doc_type="price_change_data", body=body)
 
     def __alert(self, change_ratio, type):
+        is_notification_suspended = self._redis_client.get(PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY)
+        if is_notification_suspended:
+            return
         lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         if not(lower_threshold < change_ratio < upper_threshold):
             payload = {"text": "%s price is changing quickly %s%% compare to %s hours ago"
                                % (type, round(change_ratio * 100, 2), self.__PRICE_CHANGE_TIME_RANGE_HOURS)}
             requests.post(configs.SLACK_WEB_HOOK, data={'payload': str(payload)})
+            self._redis_client.set(
+                PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY,
+                True,
+                ex=PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY_EXPIRING_TIME)
 
     def __get_past_price(self, type):
         query_body = {

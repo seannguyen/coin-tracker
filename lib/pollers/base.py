@@ -1,4 +1,3 @@
-from datetime import datetime
 from lib.services import coin_base, elastic_search
 
 
