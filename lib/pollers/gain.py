@@ -12,7 +12,7 @@ class GainPoller(BasePoller):
     def __init__(self):
         super(GainPoller, self).__init__()
 
-    def poll_gain(self):
+    def _execute(self):
         accounts = self.__get_accounts()
         for account in accounts:
             buy = 0
@@ -63,4 +63,4 @@ class GainPoller(BasePoller):
         return res.data
 
 if __name__ == '__main__':
-    GainPoller().poll_gain()
+    GainPoller().poll()

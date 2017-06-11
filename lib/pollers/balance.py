@@ -10,7 +10,7 @@ class BalancePoller(BasePoller):
     def __init__(self):
         super(BalancePoller, self).__init__()
 
-    def poll_balance(self):
+    def _execute(self):
         logging.info('Start query for CoinBase balance')
         accounts = self._coin_base_client.get_accounts().data
         for account in accounts:
@@ -24,4 +24,4 @@ class BalancePoller(BasePoller):
 
 
 if __name__ == '__main__':
-    BalancePoller().poll_balance()
+    BalancePoller().poll()

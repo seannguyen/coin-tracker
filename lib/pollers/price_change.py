@@ -18,7 +18,7 @@ class PriceChangePoller(PricePoller):
         super(PriceChangePoller, self).__init__()
         self._redis_client = redis_service.client()
 
-    def poll_price_change(self):
+    def _execute(self):
         self.__poll_and_alert_price_change('BTC')
         self.__poll_and_alert_price_change('ETH')
         self.__poll_and_alert_price_change('LTC')
@@ -107,4 +107,4 @@ class PriceChangePoller(PricePoller):
 
 
 if __name__ == '__main__':
-    PriceChangePoller().poll_price_change()
+    PriceChangePoller().poll()

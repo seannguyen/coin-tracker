@@ -10,7 +10,7 @@ class PricePoller(BasePoller):
     def __init__(self):
         super(PricePoller, self).__init__()
 
-    def poll_price(self):
+    def _execute(self):
         price_data = self._get_bit_coin_price()
         self.__save_bit_coin_price(price_data['amount'], price_data['currency'])
         price_data = self._get_ethereum_price()
@@ -61,4 +61,4 @@ class PricePoller(BasePoller):
         self._es_client.index(index=PricePoller.__ES_INDEX_NAME, doc_type="price_data", body=body)
 
 if __name__ == '__main__':
-    PricePoller().poll_price()
+    PricePoller().poll()
