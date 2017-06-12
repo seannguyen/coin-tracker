@@ -10,7 +10,9 @@ class CurrencyConvertService(object):
         self.__rates = {}
 
     def convert(self, amount, from_currency, to_currency):
-        rate = self.__get_rate(from_currency, to_currency)
+        if amount is None:
+            return None
+        rate = self.__get_rate(from_currency.upper(), to_currency.upper())
         return rate * amount
 
     def __get_rate(self, from_currency, to_currency):
