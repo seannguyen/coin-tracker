@@ -14,7 +14,7 @@ class CoinBaseService(BaseService):
     EXCHANGE_NAME = 'coinbase'
 
     def __init__(self):
-        self.__client = Client(configs.API_KEY, configs.API_SECRET)
+        self.__client = Client(configs.COINBASE_API_KEY, configs.COINBASE_API_SECRET)
         self.__currency_converter = CurrencyConvertService()
 
     def get_balances(self):

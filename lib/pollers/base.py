@@ -1,8 +1,5 @@
 import abc
-import logging
-from raven.handlers.logging import SentryHandler
-from raven.conf import setup_logging
-from lib.services import coin_base, elastic_search, sentry_service
+from lib.services import coin_base, elastic_search, sentry_service, bitfinex_service
 
 
 class BasePoller(object):
@@ -12,6 +9,7 @@ class BasePoller(object):
         super(BasePoller, self).__init__()
         self._coin_base_client = coin_base.client()
         self._coin_base_service = coin_base.CoinBaseService()
+        self._bit_finex_service = bitfinex_service.BitFinexService()
         self._es_client = elastic_search.client()
         self.__sentry_client = sentry_service.client()
 

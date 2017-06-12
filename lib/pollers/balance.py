@@ -1,6 +1,3 @@
-from datetime import datetime
-import logging
-
 from lib.pollers.base import BasePoller
 
 
@@ -11,8 +8,12 @@ class BalancePoller(BasePoller):
         super(BalancePoller, self).__init__()
 
     def _execute(self):
-        #CoinBase
+        # CoinBase
         balances_data = self._coin_base_service.get_balances()
+        for balance_data in balances_data:
+            self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
+        # BitFinex
+        balances_data = self._bit_finex_service.get_balances()
         for balance_data in balances_data:
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
 

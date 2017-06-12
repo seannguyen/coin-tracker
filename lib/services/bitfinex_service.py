@@ -23,6 +23,8 @@ class BitFinexService(BaseService):
         now = datetime.utcnow()
         for data in balances_data:
             usd_amount = self.__get_price(data['currency']) * float(data['amount'])
+            sgd_amount = self.__currency_converter.convert(usd_amount, 'USD', 'SGD')
+            logging.info('Current BitFinex %s balance: SGD %s' % (data['type'], sgd_amount))
             balance_data = {
                 'timestamp': now,
                 'exchange': self.EXCHANGE_NAME,
@@ -31,7 +33,7 @@ class BitFinexService(BaseService):
                 'currency': data['currency'],
                 'balances': {
                     'native': float(data['amount']),
-                    'sgd': self.__currency_converter.convert(usd_amount, 'USD', 'SGD'),
+                    'sgd': sgd_amount,
                     'usd': usd_amount
                 }
             }
@@ -57,7 +59,7 @@ class BitFinexService(BaseService):
         return response.json()
 
     def __get_price(self, currency, target_currency='usd'):
-        response = requests.get('https://api.bitfinex.com/v1/pubticker/%s' % currency + target_currency)
+        response = requests.get(configs.BITFINEX_BASE_URL + '/v1/pubticker/%s' % currency + target_currency)
         response.raise_for_status()
         return float(response.json()['last_price'])
 
