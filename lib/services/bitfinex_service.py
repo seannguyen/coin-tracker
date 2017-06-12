@@ -30,7 +30,7 @@ class BitFinexService(BaseService):
                 'exchange': self.EXCHANGE_NAME,
                 'type': data['type'],
                 'account': data['type'],
-                'currency': data['currency'],
+                'currency': data['currency'].upper(),
                 'balances': {
                     'native': float(data['amount']),
                     'sgd': sgd_amount,

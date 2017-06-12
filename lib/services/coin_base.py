@@ -32,7 +32,7 @@ class CoinBaseService(BaseService):
                 'exchange': self.EXCHANGE_NAME,
                 'type': account['type'],
                 'account': account['name'],
-                'currency': account['currency'],
+                'currency': account['currency'].upper(),
                 'balances': {
                     'native': float(account['balance']['amount']),
                     'sgd': sgd_amount,

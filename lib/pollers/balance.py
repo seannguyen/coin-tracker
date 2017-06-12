@@ -1,3 +1,7 @@
+from itertools import ifilter, imap
+from functools import reduce
+from datetime import datetime
+import logging
 from lib.pollers.base import BasePoller
 
 
@@ -9,13 +13,51 @@ class BalancePoller(BasePoller):
 
     def _execute(self):
         # CoinBase
-        balances_data = self._coin_base_service.get_balances()
-        for balance_data in balances_data:
+        coinbase_balances_data = self._coin_base_service.get_balances()
+        for balance_data in coinbase_balances_data:
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
         # BitFinex
-        balances_data = self._bit_finex_service.get_balances()
-        for balance_data in balances_data:
+        bitfinex_balances_data = self._bit_finex_service.get_balances()
+        for balance_data in bitfinex_balances_data:
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
+
+        # All
+        global_balances_data = self.__get_global_balances_data(coinbase_balances_data + bitfinex_balances_data)
+        for balance_data in global_balances_data:
+            self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
+
+
+    def __get_global_balances_data(self, balances_data):
+        currencies = imap(lambda balance_data: balance_data['currency'], balances_data)
+        now = datetime.utcnow()
+        global_balances_data = []
+        for currency in currencies:
+            currency_balances_data = ifilter(lambda balance_data: balance_data['currency'] == currency, balances_data)
+            native_amount = 0
+            usd_amount = 0
+            sgd_amount = 0
+            for currency_balance_data in currency_balances_data:
+                native_amount += currency_balance_data['balances']['native']
+                usd_amount += currency_balance_data['balances']['usd']
+                sgd_amount += currency_balance_data['balances']['sgd']
+            # native_amount = reduce(lambda sum, data: sum + balances_data['balance']['native'], currency_balances_data, 0)
+            # usd_amount = reduce(lambda sum, data: sum + balances_data['balance']['usd'], currency_balances_data, 0)
+            # sgd_amount = reduce(lambda sum, data: sum + balances_data['balance']['sgd'], currency_balances_data, 0)
+            logging.info('Current global %s balance: SGD %s' % (currency, sgd_amount))
+            balance_data = {
+                'timestamp': now,
+                'exchange': 'global',
+                'type': 'global',
+                'account': 'global',
+                'currency': currency,
+                'balances': {
+                    'native': native_amount,
+                    'sgd': sgd_amount,
+                    'usd': usd_amount
+                }
+            }
+            global_balances_data.append(balance_data)
+        return global_balances_data
 
 
 if __name__ == '__main__':
