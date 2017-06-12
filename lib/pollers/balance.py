@@ -5,22 +5,16 @@ from lib.pollers.base import BasePoller
 
 
 class BalancePoller(BasePoller):
-    __ES_INDEX_NAME = 'coinbase-balance'
+    __ES_INDEX_NAME = 'coin-balance'
 
     def __init__(self):
         super(BalancePoller, self).__init__()
 
     def _execute(self):
-        logging.info('Start query for CoinBase balance')
-        accounts = self._coin_base_client.get_accounts().data
-        for account in accounts:
-            logging.info('Current %s balance: %s %s' % (account['name'],
-                                                       account['native_balance']['currency'],
-                                                       account['native_balance']['amount']))
-            account['timestamp'] = datetime.utcnow()
-            account['balance']['amount'] = float(account['balance']['amount'])
-            account['native_balance']['amount'] = float(account['native_balance']['amount'])
-            self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=account)
+        #CoinBase
+        balances_data = self._coin_base_service.get_balances()
+        for balance_data in balances_data:
+            self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
 
 
 if __name__ == '__main__':

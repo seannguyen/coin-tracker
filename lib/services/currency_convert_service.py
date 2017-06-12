@@ -20,7 +20,7 @@ class CurrencyConvertService(object):
             return self.__rates[from_currency][to_currency]
 
         params = { 'base': from_currency, 'symbols': to_currency }
-        response = requests.get('https://api.fixer.io/latest', params=params)
+        response = requests.get('http://api.fixer.io/latest', params=params)
         response.raise_for_status()
         response_json = response.json()
         if from_currency != response_json['base'] or response_json['rates'][to_currency] is None:
