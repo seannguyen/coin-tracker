@@ -7,7 +7,7 @@ from lib.services.currency_convert_service import CurrencyConvertService
 
 
 def client():
-    return Client(configs.API_KEY, configs.API_SECRET)
+    return Client(configs.COINBASE_API_KEY, configs.COINBASE_API_SECRET)
 
 
 class CoinBaseService(BaseService):
