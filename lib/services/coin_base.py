@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 from coinbase.wallet.client import Client
+import requests
 from lib.services.base import BaseService
 from lib import configs
 from lib.services.currency_convert_service import CurrencyConvertService
@@ -41,3 +42,11 @@ class CoinBaseService(BaseService):
             }
             balances_data.append(balance_data)
         return balances_data
+
+    def get_price(self, from_currency, to_currency):
+        response = requests.get('https://api.coinbase.com/v2/prices/%s-%s/spot' % (from_currency, to_currency))
+        if not response.ok:
+            return False
+        price_data = response.json()['data']
+        logging.info('CoinBase BitCoin price: %s' % (price_data))
+        return price_data
