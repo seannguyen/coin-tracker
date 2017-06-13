@@ -9,7 +9,7 @@ import lib.services.redis_service as redis_service
 
 class PriceChangePoller(InfoPoller):
     __ES_INDEX_NAME = 'coin-price-change'
-    __PRICE_CHANGE_THRESHOLD = 0.15
+    __PRICE_CHANGE_THRESHOLD = 0.1
     __PRICE_CHANGE_TIME_RANGE_HOURS = 3
     __NOTIFICATION_SUSPENSION_KEY = 'NOTIFICATION_SUSPENSION:PRICE_CHANGE'
     __NOTIFICATION_SUSPENSION_KEY_EXPIRING_TIME = 60 * 60 * 3
