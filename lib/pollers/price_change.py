@@ -3,13 +3,13 @@ import logging
 import requests
 
 import lib.configs as configs
-from lib.pollers.price import PricePoller
+from lib.pollers.info import InfoPoller
 import lib.services.redis_service as redis_service
 
 
-class PriceChangePoller(PricePoller):
+class PriceChangePoller(InfoPoller):
     __ES_INDEX_NAME = 'coinbase-price-change'
-    __PRICE_CHANGE_THRESHOLD = 0.07
+    __PRICE_CHANGE_THRESHOLD = 0.15
     __PRICE_CHANGE_TIME_RANGE_HOURS = 3
     __NOTIFICATION_SUSPENSION_KEY = 'NOTIFICATION_SUSPENSION:PRICE_CHANGE'
     __NOTIFICATION_SUSPENSION_KEY_EXPIRING_TIME = 60 * 60 * 3
@@ -19,62 +19,59 @@ class PriceChangePoller(PricePoller):
         self._redis_client = redis_service.client()
 
     def _execute(self):
-        self.__poll_and_alert_price_change('BTC')
-        self.__poll_and_alert_price_change('ETH')
-        self.__poll_and_alert_price_change('LTC')
+        coins_data = self._coinmarketcap_service.get_all_coins_data()
+        for coin_data in coins_data:
+            self.__poll_and_alert_price_change(coin_data)
 
-    def __poll_and_alert_price_change(self, type):
-        logging.info('Start polling %s price change' % type)
-        past_price_data = self.__get_past_price(type)
+    def __poll_and_alert_price_change(self, current_price_data):
+        logging.info('Start polling %s price change' % current_price_data['name'])
+        past_price_data = self.__get_past_price(current_price_data['id'])
         if not past_price_data:
             return
 
-        logging.info('%s price %s hours ago: %s %s' % (type,
+        logging.info('%s price %s hours ago: SGD %s' % (current_price_data['name'],
                                                        self.__PRICE_CHANGE_TIME_RANGE_HOURS,
-                                                       past_price_data['currency'],
-                                                       past_price_data['price']))
-        current_price_data = self.__get_current_price(type)
-        logging.info('%s price at the moment: %s %s' % (type,
-                                                        current_price_data['currency'],
-                                                        current_price_data['amount']))
+                                                       past_price_data['price_sgd']))
+        logging.info('%s price at the moment: SGD %s' % (current_price_data['name'],
+                                                        current_price_data['price_sgd']))
 
-        change_ratio = float(current_price_data['amount']) / past_price_data['price']
+        change_ratio = float(current_price_data['price_sgd']) / past_price_data['price_sgd']
         logging.info('%s Price change ratio: %s' % (type, change_ratio))
-        self.__save(change_ratio, type)
-        self.__alert(change_ratio, type)
+        self.__save(change_ratio, current_price_data['id'])
+        self.__alert(change_ratio, current_price_data['name'])
 
-    def __save(self, change_ratio, type):
-        logging.info('Saving %s change ratio to ElasticSearch' % type)
+    def __save(self, change_ratio, coin_id):
+        logging.info('Saving %s change ratio to ElasticSearch' % coin_id)
         body = {
             "change_ratio": float(change_ratio),
             "timestamp": datetime.utcnow(),
-            "type": type
+            "type": coin_id
         }
         self._es_client.index(index=self.__ES_INDEX_NAME, doc_type="price_change_data", body=body)
 
-    def __alert(self, change_ratio, type):
-        redis_notification_suspension_key = "%s:%s" % (PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY, type)
+    def __alert(self, change_ratio, name):
+        redis_notification_suspension_key = "%s:%s" % (PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY, name)
         if self._redis_client.exists(redis_notification_suspension_key):
             return
         lower_threshold = 1 - PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         upper_threshold = 1 + PriceChangePoller.__PRICE_CHANGE_THRESHOLD
         if not(lower_threshold < change_ratio < upper_threshold):
             payload = {"text": "%s price is changing quickly %s%% compare to %s hours ago"
-                               % (type, round(change_ratio * 100, 2), self.__PRICE_CHANGE_TIME_RANGE_HOURS)}
+                               % (name, round(change_ratio * 100, 2), self.__PRICE_CHANGE_TIME_RANGE_HOURS)}
             requests.post(configs.SLACK_WEB_HOOK, data={'payload': str(payload)})
             self._redis_client.set(
                 redis_notification_suspension_key,
                 True,
                 ex=PriceChangePoller.__NOTIFICATION_SUSPENSION_KEY_EXPIRING_TIME)
 
-    def __get_past_price(self, type):
+    def __get_past_price(self, coin_id):
         query_body = {
             'query': {
                 'bool': {
                     'must': [
                         {
                             'match': {
-                                "type": type
+                                "id": coin_id
                             }
                         },
                         {
@@ -91,19 +88,9 @@ class PriceChangePoller(PricePoller):
 
             }
         }
-        res = self._es_client.search(index='coinbase-price', body=query_body)
+        res = self._es_client.search(index='coin-info', body=query_body)
         hits = res['hits']['hits']
         return hits[0]['_source'] if hits else None
-
-    def __get_current_price(self, type):
-        if type == 'BTC':
-            return self._get_bit_coin_price()
-        elif type == 'ETH':
-            return self._get_ethereum_price()
-        elif type == 'LTC':
-            return self._get_lite_coin_price()
-        else:
-            pass
 
 
 if __name__ == '__main__':

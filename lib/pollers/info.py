@@ -9,10 +9,10 @@ class InfoPoller(BasePoller):
 
     def __init__(self):
         super(InfoPoller, self).__init__()
-        self.__coinmarketcap_service = CoinMarketCapService()
+        self._coinmarketcap_service = CoinMarketCapService()
 
     def _execute(self):
-        coins_data = self.__coinmarketcap_service.get_all_coins_data()
+        coins_data = self._coinmarketcap_service.get_all_coins_data()
         for coin_data in coins_data:
             self.__save_coin_data(coin_data)
 
