@@ -5,8 +5,8 @@ from lib.services.base import BaseService
 
 
 class CoinMarketCapService(BaseService):
-    def get_all_coins_data(self):
-        res = requests.get('https://api.coinmarketcap.com/v1/ticker')
+    def get_all_coins_data(self, limit=200):
+        res = requests.get('https://api.coinmarketcap.com/v1/ticker', params={'limit':limit})
         res.raise_for_status()
         return imap(self.__preprocess_data, res.json())
 
