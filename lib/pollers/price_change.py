@@ -29,13 +29,13 @@ class PriceChangePoller(InfoPoller):
         if not past_price_data:
             return
 
-        logging.info('%s price %s hours ago: SGD %s' % (current_price_data['name'],
+        logging.info('%s price %s hours ago: USD %s' % (current_price_data['name'],
                                                        self.__PRICE_CHANGE_TIME_RANGE_HOURS,
-                                                       past_price_data['price_sgd']))
-        logging.info('%s price at the moment: SGD %s' % (current_price_data['name'],
-                                                        current_price_data['price_sgd']))
+                                                       past_price_data['price_usd']))
+        logging.info('%s price at the moment: USD %s' % (current_price_data['name'],
+                                                        current_price_data['price_usd']))
 
-        change_ratio = float(current_price_data['price_sgd']) / past_price_data['price_sgd']
+        change_ratio = float(current_price_data['price_usd']) / past_price_data['price_usd']
         logging.info('%s Price change ratio: %s' % (type, change_ratio))
         self.__save(change_ratio, current_price_data['id'])
         self.__alert(change_ratio, current_price_data['name'])
