@@ -8,7 +8,7 @@ import lib.services.redis_service as redis_service
 
 
 class PriceChangePoller(InfoPoller):
-    __ES_INDEX_NAME = 'coinbase-price-change'
+    __ES_INDEX_NAME = 'coin-price-change'
     __PRICE_CHANGE_THRESHOLD = 0.15
     __PRICE_CHANGE_TIME_RANGE_HOURS = 3
     __NOTIFICATION_SUSPENSION_KEY = 'NOTIFICATION_SUSPENSION:PRICE_CHANGE'
@@ -35,7 +35,9 @@ class PriceChangePoller(InfoPoller):
         logging.info('%s price at the moment: USD %s' % (current_price_data['name'],
                                                         current_price_data['price_usd']))
 
-        change_ratio = float(current_price_data['price_usd'] or 0) / (past_price_data['price_usd'] or 0)
+        if current_price_data['price_usd'] or past_price_data['price_usd']:
+            return
+        change_ratio = float(current_price_data['price_usd']) / past_price_data['price_usd']
         logging.info('%s Price change ratio: %s' % (current_price_data['name'], change_ratio))
         self.__save(change_ratio, current_price_data['id'])
         self.__alert(change_ratio, current_price_data['name'])
