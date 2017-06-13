@@ -5,6 +5,7 @@ import base64
 import hashlib
 import requests
 import hmac
+import random
 from lib.services.base import BaseService
 from lib import configs
 from lib.services.currency_convert_service import CurrencyConvertService
@@ -44,7 +45,7 @@ class BitFinexService(BaseService):
         url = '/v1/balances'
         body = {
             'request': url,
-            'nonce': datetime.utcnow().strftime('%s')
+            'nonce': datetime.utcnow().strftime('%s') + str(random.randrange(10000, 99999))
         }
         body_json = json.dumps(body)
         payload = base64.b64encode(body_json)
