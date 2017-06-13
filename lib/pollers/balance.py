@@ -38,9 +38,8 @@ class BalancePoller(BasePoller):
         }
         self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
 
-
     def __get_global_balances_data(self, balances_data):
-        currencies = imap(lambda balance_data: balance_data['currency'], balances_data)
+        currencies = set(imap(lambda balance_data: balance_data['currency'], balances_data))
         now = datetime.utcnow()
         global_balances_data = []
         for currency in currencies:
