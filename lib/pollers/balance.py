@@ -23,8 +23,20 @@ class BalancePoller(BasePoller):
 
         # All
         global_balances_data = self.__get_global_balances_data(coinbase_balances_data + bitfinex_balances_data)
+        global_sum = {'usd': 0, 'sgd': 0, 'native': 0}
         for balance_data in global_balances_data:
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
+            global_sum['usd'] += balance_data['balances']['usd']
+            global_sum['sgd'] += balance_data['balances']['sgd']
+        balance_data = {
+            'timestamp': datetime.utcnow(),
+            'exchange': 'global',
+            'type': 'global',
+            'account': 'global',
+            'currency': 'global',
+            'balances': global_sum
+        }
+        self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
 
 
     def __get_global_balances_data(self, balances_data):
@@ -32,7 +44,7 @@ class BalancePoller(BasePoller):
         now = datetime.utcnow()
         global_balances_data = []
         for currency in currencies:
-            currency_balances_data = ifilter(lambda balance_data: balance_data['currency'] == currency, balances_data)
+            currency_balances_data = ifilter(lambda data: data['currency'] == currency, balances_data)
             native_amount = 0
             usd_amount = 0
             sgd_amount = 0
@@ -40,9 +52,6 @@ class BalancePoller(BasePoller):
                 native_amount += currency_balance_data['balances']['native']
                 usd_amount += currency_balance_data['balances']['usd']
                 sgd_amount += currency_balance_data['balances']['sgd']
-            # native_amount = reduce(lambda sum, data: sum + balances_data['balance']['native'], currency_balances_data, 0)
-            # usd_amount = reduce(lambda sum, data: sum + balances_data['balance']['usd'], currency_balances_data, 0)
-            # sgd_amount = reduce(lambda sum, data: sum + balances_data['balance']['sgd'], currency_balances_data, 0)
             logging.info('Current global %s balance: SGD %s' % (currency, sgd_amount))
             balance_data = {
                 'timestamp': now,
