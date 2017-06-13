@@ -35,7 +35,7 @@ class PriceChangePoller(InfoPoller):
         logging.info('%s price at the moment: USD %s' % (current_price_data['name'],
                                                         current_price_data['price_usd']))
 
-        if current_price_data['price_usd'] or past_price_data['price_usd']:
+        if not current_price_data['price_usd'] or not past_price_data['price_usd']:
             return
         change_ratio = float(current_price_data['price_usd']) / past_price_data['price_usd']
         logging.info('%s Price change ratio: %s' % (current_price_data['name'], change_ratio))
