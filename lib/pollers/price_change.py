@@ -36,7 +36,7 @@ class PriceChangePoller(InfoPoller):
                                                         current_price_data['price_usd']))
 
         change_ratio = float(current_price_data['price_usd']) / past_price_data['price_usd']
-        logging.info('%s Price change ratio: %s' % (type, change_ratio))
+        logging.info('%s Price change ratio: %s' % (current_price_data['name'], change_ratio))
         self.__save(change_ratio, current_price_data['id'])
         self.__alert(change_ratio, current_price_data['name'])
 
