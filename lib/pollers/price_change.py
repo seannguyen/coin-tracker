@@ -25,7 +25,7 @@ class PriceChangePoller(InfoPoller):
 
     def __poll_and_alert_price_change(self, current_price_data):
         logging.info('Start polling %s price change' % current_price_data['name'])
-        past_price_data = self.__get_past_price(current_price_data['id'])
+        past_price_data = self. __get_past_price(current_price_data['id'])
         if not past_price_data:
             return
 
