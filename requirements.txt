@@ -4,7 +4,9 @@ coinbase==2.0.6
 contextlib2==0.5.5
 elasticsearch==5.2.0
 packaging==16.8
+-e git+https://github.com/s4w3d0ff/python-poloniex.git@099074152100ae0dcd64698cbad303851f55fa3d#egg=poloniex
 pycrypto==2.6.1
+pydash==4.1.0
 pyparsing==2.2.0
 raven==6.1.0
 redis==2.10.5
