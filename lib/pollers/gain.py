@@ -4,7 +4,7 @@ import logging
 from lib.pollers.base import BasePoller
 
 class GainPoller(BasePoller):
-    __ES_INDEX_NAME = 'coinbase-gain'
+    __ES_INDEX_NAME = BasePoller._get_es_index_name('coinbase-gain')
     __COIN_BASE_COMMISSION = 0.015
     __BUY_ADJUST_AFTER_COMMISSION = 1 + __COIN_BASE_COMMISSION
     __SELL_ADJUST_AFTER_COMMISSION = 1 - __COIN_BASE_COMMISSION

@@ -5,7 +5,7 @@ from lib.services.coinmarketcap_service import CoinMarketCapService
 
 
 class InfoPoller(BasePoller):
-    __ES_INDEX_NAME = 'coin-info'
+    __ES_INDEX_NAME = BasePoller._get_es_index_name('coin-info')
 
     def __init__(self):
         super(InfoPoller, self).__init__()

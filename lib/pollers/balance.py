@@ -6,7 +6,7 @@ from lib.pollers.base import BasePoller
 
 
 class BalancePoller(BasePoller):
-    __ES_INDEX_NAME = 'coin-balance'
+    __ES_INDEX_NAME = BasePoller._get_es_index_name('coin-balance')
 
     def __init__(self):
         super(BalancePoller, self).__init__()

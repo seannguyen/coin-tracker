@@ -1,11 +1,10 @@
 import abc
+from datetime import date
 from lib.services import coin_base, elastic_search, sentry_service, bitfinex_service, currency_convert_service
 from lib.services.poloniex_service import PoloniexService
 
 
 class BasePoller(object):
-    __ES_INDEX_NAME = 'coinbase-price'
-
     def __init__(self):
         super(BasePoller, self).__init__()
         self._coin_base_client = coin_base.client()
@@ -23,6 +22,10 @@ class BasePoller(object):
         except Exception as e:
             self.__sentry_client.captureException()
             raise e
+
+    @staticmethod
+    def _get_es_index_name(base_name):
+        return "%s-%s" % (base_name, ''.join(str(date.today()).split('-')))
 
     @abc.abstractmethod
     def _execute(self):
