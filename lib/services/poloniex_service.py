@@ -27,7 +27,7 @@ class PoloniexService(BaseService):
         if type(balance_data_by_type) is list:
             return balances_data
 
-        for type, balance_by_currency in balance_data_by_type.iteritems():
+        for balance_type, balance_by_currency in balance_data_by_type.iteritems():
             for symbol, native_balance in balance_by_currency.iteritems():
                 native_balance = float(native_balance)
                 usd_amount = coins_data[symbol]['price_usd'] * native_balance
@@ -36,8 +36,8 @@ class PoloniexService(BaseService):
                 balances_data.append({
                     # 'timestamp': now,
                     'exchange': self.EXCHANGE_NAME,
-                    'type': type,
-                    'account': type,
+                    'type': balance_type,
+                    'account': balance_type,
                     'currency': symbol.upper(),
                     'balances': {
                         'native': native_balance,
