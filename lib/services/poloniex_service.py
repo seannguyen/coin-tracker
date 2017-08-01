@@ -21,6 +21,12 @@ class PoloniexService(BaseService):
         coins_data = self.__coinmarketcap_service.get_all_coins_data_hash(limit=1000)
         balances_data = []
         now = datetime.utcnow()
+
+        # there is a bug in poloniex client that when the response list is empty, the returned data
+        # is an empty list instead of a dict
+        if type(balance_data_by_type) is list:
+            return balances_data
+
         for type, balance_by_currency in balance_data_by_type.iteritems():
             for symbol, native_balance in balance_by_currency.iteritems():
                 native_balance = float(native_balance)
