@@ -6,11 +6,11 @@ from pydash.collections import key_by
 
 
 class CoinMarketCapService(BaseService):
-    def get_all_coins_data_hash(self, limit=200):
+    def get_all_coins_data_hash(self, limit=50):
         all_coins_data = self.get_all_coins_data(limit=limit)
         return key_by(all_coins_data, 'symbol')
 
-    def get_all_coins_data(self, limit=200):
+    def get_all_coins_data(self, limit=50):
         res = requests.get('https://api.coinmarketcap.com/v1/ticker', params={'limit':limit})
         res.raise_for_status()
         return imap(self.__preprocess_data, res.json())
