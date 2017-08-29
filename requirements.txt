@@ -1,11 +1,11 @@
 appdirs==1.4.3
 backports.ssl-match-hostname==3.5.0.1
-certifi==2017.4.17
+certifi==2017.7.27.1
 click==6.7
 coinbase==2.0.6
 contextlib2==0.5.5
 elasticsearch==5.4.0
-elasticsearch-curator==5.1.1
+elasticsearch-curator==5.1.2
 packaging==16.8
 -e git+https://github.com/s4w3d0ff/python-poloniex.git@099074152100ae0dcd64698cbad303851f55fa3d#egg=poloniex
 pycrypto==2.6.1
@@ -17,6 +17,6 @@ redis==2.10.5
 requests==2.13.0
 six==1.10.0
 slackclient==1.0.5
-urllib3==1.20
+urllib3==1.22
 voluptuous==0.10.5
 websocket-client==0.40.0
