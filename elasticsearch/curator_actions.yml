@@ -40,4 +40,4 @@ actions:
       timestring: '%Y%m%d'
       direction: older
       unit: months
-      unit_count: 6
+      unit_count: 1
