@@ -2,3 +2,4 @@
 env/
 coinbase-tracker.log
 lib/configs.py
+nginx/htpasswd

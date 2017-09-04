@@ -1,0 +1,21 @@
+upstream app {
+    server localhost:5601 fail_timeout=0;
+}
+
+server {
+    listen 80;
+    server_name kibana.seannguyentrong.com;
+
+    auth_basic "Restricted";
+    auth_basic_user_file /var/www/coin-tracker/nginx/htpasswd;
+
+    location / {
+        proxy_pass http://app;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+    }
+
+    client_max_body_size 4G;
+    keepalive_timeout 10;
+}
