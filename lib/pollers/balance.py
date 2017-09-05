@@ -25,10 +25,16 @@ class BalancePoller(BasePoller):
         for balance_data in poloniex_balances_data:
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
 
+        # Bittrex
+        bittrex_balances_data = self._bittrex_service.get_balances()
+        for balance_data in bittrex_balances_data:
+            self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)
+
         # All
         global_balances_data = self.__get_global_balances_data(coinbase_balances_data +
                                                                bitfinex_balances_data +
-                                                               poloniex_balances_data)
+                                                               poloniex_balances_data +
+                                                               bittrex_balances_data)
         global_sum = {'usd': 0, 'sgd': 0, 'native': 0}
         for balance_data in global_balances_data:
             self._es_client.index(index=BalancePoller.__ES_INDEX_NAME, doc_type="balance_data", body=balance_data)

@@ -15,6 +15,13 @@ class CoinMarketCapService(BaseService):
         res.raise_for_status()
         return imap(self.__preprocess_data, res.json())
 
+    def get_price(self, full_coin_name):
+        coin_data = self.__get_coin_data(full_coin_name)[0]
+        return float(coin_data['price_usd'])
+
+    def __get_coin_data(self, full_coin_name):
+        return requests.get('https://api.coinmarketcap.com/v1/ticker/%s' % full_coin_name).json()
+
     def __preprocess_data(self, data):
         number_fields = ['rank',
                          'price_usd',

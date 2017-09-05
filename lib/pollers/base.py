@@ -2,6 +2,7 @@ import abc
 from datetime import date
 from lib.services import coin_base, elastic_search, sentry_service, bitfinex_service, currency_convert_service
 from lib.services.poloniex_service import PoloniexService
+from lib.services.bittrex_service import BittrexService
 
 
 class BasePoller(object):
@@ -11,6 +12,7 @@ class BasePoller(object):
         self._coin_base_service = coin_base.CoinBaseService()
         self._bit_finex_service = bitfinex_service.BitFinexService()
         self._poloniex_service = PoloniexService()
+        self._bittrex_service = BittrexService()
         self._es_client = elastic_search.client()
         self._currency_converter = currency_convert_service.CurrencyConvertService()
         self.__sentry_client = sentry_service.client()

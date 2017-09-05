@@ -60,10 +60,8 @@ class BitFinexService(BaseService):
         return response.json()
 
     def __get_price(self, currency, target_currency='usd'):
+        if currency == target_currency:
+            return 1
         response = requests.get(configs.BITFINEX_BASE_URL + '/v1/pubticker/%s' % currency + target_currency)
         response.raise_for_status()
         return float(response.json()['last_price'])
-
-
-if __name__ == '__main__':
-    print json.dumps(BitFinexService().get_balances(), indent=2)
