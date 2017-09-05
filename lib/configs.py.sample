@@ -5,19 +5,32 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)-15s %(message)s')
 
 # CoinBase
-API_KEY = 'dummy'
-API_SECRET = 'dummy'
+COINBASE_API_KEY = 'exmaple'
+COINBASE_API_SECRET = 'exmaple'
+
+# BitFinex
+BITFINEX_BASE_URL = 'exmaple'
+BITFINEX_API_KEY = 'exmaple'
+BITFINEX_API_SECRET = 'exmaple'
+
+# Poloniex
+POLONIEX_API_KEY = 'exmaple'
+POLONIEX_API_SECRET = 'exmaple'
+
+# Bittrex
+BITTREX_APY_KEY = 'exmaple'
+BITTREX_APY_SECRET = 'exmaple'
 
 # Slack Webhook
-SLACK_WEB_HOOK = 'dummy'
+SLACK_WEB_HOOK = 'exmaple'
 
 # ElasticSearch
-ELASTIC_SEARCH_HOST = 'dummy'
+ELASTIC_SEARCH_HOST = 'exmaple'
 
 # Redis
-REDIS_HOST = 'dummy'
-REDIS_PORT = 'dummy'
-REDIS_PASSWORD = 'dummy'
+REDIS_HOST = 'exmaple'
+REDIS_PORT = 'exmaple'
+REDIS_PASSWORD = 'exmaple'
 
 # Sentry
-SENTRY_URL = 'dummy'
+SENTRY_URL = None
