@@ -1,4 +1,4 @@
-upstream app {
+upstream kibana {
     server 10.99.0.10:5601 fail_timeout=0;
 }
 
@@ -10,7 +10,7 @@ server {
     auth_basic_user_file /var/www/coin-tracker/nginx/htpasswd;
 
     location / {
-        proxy_pass http://app;
+        proxy_pass http://kibana;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $http_host;
         proxy_redirect off;
