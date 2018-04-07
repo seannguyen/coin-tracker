@@ -1,17 +1,28 @@
 package main
 
 import (
+	"github.com/spf13/viper"
+	"log"
 	"fmt"
-	"github.com/toorop/go-bittrex"
-)
-
-const (
-	API_KEY    = ""
-	API_SECRET = ""
+	"github.com/seannguyen/coin-tracker/internal/services/bittrex"
 )
 
 func main() {
-	bittrex := bittrex.New(API_KEY, API_SECRET)
+	initConfigs()
 	balances, err := bittrex.GetBalances()
-	fmt.Println(err, balances)
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	fmt.Println(balances)
+}
+
+func initConfigs() {
+	viper.AutomaticEnv()
+	viper.SetConfigName("config")
+	viper.AddConfigPath("./configs")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Panicln(err)
+	}
 }
