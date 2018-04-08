@@ -1,2 +1,4 @@
+DB_CONNECTION_STRING: "host=localhost port=5432 user=local-app dbname=coin-tracker password=password12 sslmode=disable"
+
 BITTREX_API_KEY: "1822f11eb00a40d7b667150b2a92cc66"
 BITTREX_API_SECRET: "1cd7fc428ab146babe6890998a733895"
