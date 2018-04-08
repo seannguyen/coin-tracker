@@ -1,0 +1,4 @@
+development:
+    driver: postgres
+    open: user=local-app password=password12 dbname=coin-tracker sslmode=disable
+
