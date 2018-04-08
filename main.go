@@ -5,40 +5,24 @@ import (
 	"log"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"fmt"
+	"github.com/seannguyen/coin-tracker/internal/models/snapshot_model"
+	"github.com/seannguyen/coin-tracker/internal/services/bittrex"
+	"github.com/seannguyen/coin-tracker/internal/models/balance_model"
 )
 
 var db *gorm.DB
 
-type Snapshot struct {
-	gorm.Model
-}
-
-type Balance struct {
-	gorm.Model
-	SnapshotID int
-	Snapshot Snapshot
-	Currency string `gorm:"size:10;index"`
-	Amount float64
-}
 
 func main() {
 	initialize()
 	defer destroy()
 
-	//balances, err := bittrex.GetBalances()
-	//if err != nil {
-	//	log.Panicln(err)
-	//}
-	//fmt.Println(balances)
+	balances, err := bittrex.GetBalances()
+	if err != nil {
+		log.Panicln(err)
+	}
 
-	db.AutoMigrate(&Snapshot{}, &Balance{})
-
-	//db.Create(&Snapshot{gorm.Model{ CreatedAt: time.Now(), UpdatedAt: time.Now() } })
-
-	var snap Snapshot
-	db.Take(&snap)
-	fmt.Println(snap.CreatedAt)
+	saveBalancesSnapshot(balances)
 }
 
 func initialize() {
@@ -63,8 +47,19 @@ func initDatabase() {
 	}
 	log.Println("successfully connected to db")
 	db = database
+
+	//db.LogMode(true)
 }
 
 func destroy() {
 	db.Close()
+}
+
+func saveBalancesSnapshot(balances []bittrex.BalanceData)  {
+	snapshot := snapshot_model.Snapshot{}
+	db.Create(&snapshot)
+
+	for _, balance := range balances {
+		db.Create(&balance_model.Balance { Currency: balance.Currency, Amount: balance.Amount, Snapshot: snapshot })
+	}
 }

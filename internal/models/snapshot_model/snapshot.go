@@ -1,4 +1,4 @@
-package snapshot
+package snapshot_model
 
 import "github.com/jinzhu/gorm"
 
