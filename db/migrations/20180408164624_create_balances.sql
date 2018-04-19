@@ -16,6 +16,7 @@ CREATE TABLE balances (
 );
 
 CREATE INDEX balances_on_currency ON balances USING btree(currency);
+ALTER SEQUENCE balances_id_seq OWNED BY balances.id;
 
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back

@@ -14,6 +14,7 @@ CREATE TABLE snapshots (
 );
 
 CREATE INDEX snapshots_on_created_at ON snapshots USING btree(created_at);
+ALTER SEQUENCE snapshots_id_seq OWNED BY snapshots.id;
 
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back

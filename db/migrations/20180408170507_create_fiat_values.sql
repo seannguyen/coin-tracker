@@ -14,6 +14,7 @@ CREATE TABLE fiat_values (
   currency VARCHAR(10) NOT NULL,
   amount DECIMAL(32, 16)  NOT NULL
 );
+ALTER SEQUENCE fiat_values_id_seq OWNED BY fiat_values.id;
 
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back
