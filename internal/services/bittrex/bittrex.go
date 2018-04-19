@@ -4,6 +4,7 @@ import (
 	"github.com/toorop/go-bittrex"
 	"log"
 	"github.com/spf13/viper"
+	"github.com/seannguyen/coin-tracker/internal/logger"
 )
 
 type BalanceData struct {
@@ -20,7 +21,7 @@ func GetBalances() ([]BalanceData, error) {
 		return nil, err
 	}
 
-	log.Print("Get balances successfully")
+	logger.Info("Get balances successfully")
 
 	balanceDataList := make([]BalanceData, len(balances))
 
