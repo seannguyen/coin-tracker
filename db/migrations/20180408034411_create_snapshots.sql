@@ -10,7 +10,8 @@ CREATE SEQUENCE snapshots_id_seq
 
 CREATE TABLE snapshots (
   id INT NOT NULL PRIMARY KEY DEFAULT nextval('snapshots_id_seq'),
-  created_at TIMESTAMP NOT NULL
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
 );
 
 CREATE INDEX snapshots_on_created_at ON snapshots USING btree(created_at);
@@ -19,4 +20,3 @@ ALTER SEQUENCE snapshots_id_seq OWNED BY snapshots.id;
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back
 DROP TABLE snapshots;
-DROP SEQUENCE snapshots_id_seq;
