@@ -17,35 +17,39 @@ import (
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/volatiletech/sqlboiler/strmangle"
+	"gopkg.in/volatiletech/null.v6"
 )
 
 // Balance is an object representing the database table.
 type Balance struct {
-	ID         int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt  time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt  time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	SnapshotID int       `boil:"snapshot_id" json:"snapshot_id" toml:"snapshot_id" yaml:"snapshot_id"`
-	Currency   string    `boil:"currency" json:"currency" toml:"currency" yaml:"currency"`
-	Amount     float64   `boil:"amount" json:"amount" toml:"amount" yaml:"amount"`
+	ID           int         `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt    time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt    time.Time   `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	SnapshotID   int         `boil:"snapshot_id" json:"snapshot_id" toml:"snapshot_id" yaml:"snapshot_id"`
+	Currency     string      `boil:"currency" json:"currency" toml:"currency" yaml:"currency"`
+	Amount       float64     `boil:"amount" json:"amount" toml:"amount" yaml:"amount"`
+	ExchangeName null.String `boil:"exchange_name" json:"exchange_name,omitempty" toml:"exchange_name" yaml:"exchange_name,omitempty"`
 
 	R *balanceR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L balanceL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var BalanceColumns = struct {
-	ID         string
-	CreatedAt  string
-	UpdatedAt  string
-	SnapshotID string
-	Currency   string
-	Amount     string
+	ID           string
+	CreatedAt    string
+	UpdatedAt    string
+	SnapshotID   string
+	Currency     string
+	Amount       string
+	ExchangeName string
 }{
-	ID:         "id",
-	CreatedAt:  "created_at",
-	UpdatedAt:  "updated_at",
-	SnapshotID: "snapshot_id",
-	Currency:   "currency",
-	Amount:     "amount",
+	ID:           "id",
+	CreatedAt:    "created_at",
+	UpdatedAt:    "updated_at",
+	SnapshotID:   "snapshot_id",
+	Currency:     "currency",
+	Amount:       "amount",
+	ExchangeName: "exchange_name",
 }
 
 // balanceR is where relationships are stored.
@@ -58,8 +62,8 @@ type balanceR struct {
 type balanceL struct{}
 
 var (
-	balanceColumns               = []string{"id", "created_at", "updated_at", "snapshot_id", "currency", "amount"}
-	balanceColumnsWithoutDefault = []string{"created_at", "updated_at", "snapshot_id", "currency", "amount"}
+	balanceColumns               = []string{"id", "created_at", "updated_at", "snapshot_id", "currency", "amount", "exchange_name"}
+	balanceColumnsWithoutDefault = []string{"created_at", "updated_at", "snapshot_id", "currency", "amount", "exchange_name"}
 	balanceColumnsWithDefault    = []string{"id"}
 	balancePrimaryKeyColumns     = []string{"id"}
 )
