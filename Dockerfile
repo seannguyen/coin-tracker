@@ -1,4 +1,4 @@
-FROM golang:1.8
+FROM coin-tracker-build-base
 
 WORKDIR /go/src/github.com/seannguyen/coin-tracker
 COPY . .
