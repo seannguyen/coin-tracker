@@ -1,16 +1,17 @@
 package main
 
 import (
+	"github.com/garyburd/redigo/redis"
+	"github.com/gocraft/work"
+	"github.com/seannguyen/coin-tracker/internal/jobs"
 	"github.com/spf13/viper"
 	"log"
-	"github.com/gocraft/work"
 	"os"
 	"os/signal"
-	"github.com/garyburd/redigo/redis"
-	"fmt"
-	"github.com/seannguyen/coin-tracker/internal/logger"
-	"github.com/seannguyen/coin-tracker/internal/jobs"
+	"github.com/seannguyen/coin-tracker/internal/utilities"
+	"github.com/volatiletech/sqlboiler/boil"
 )
+
 type Context struct{}
 
 func main() {
@@ -26,17 +27,19 @@ func initConfigs() {
 	if err != nil {
 		log.Panicln(err)
 	}
+	if utilities.IsDevelopment() {
+		boil.DebugMode = true
+	}
 }
 
-func initJobs()  {
+func initJobs() {
 	redisPool := createRedisPool()
 	pool := work.NewWorkerPool(Context{}, 2, "coin-tracker", redisPool)
 
 	pool.Middleware(logJobStartEvent)
 
-	pool.JobWithOptions("snapshot_balances", work.JobOptions{ MaxConcurrency: 1 }, jobs.SnapshotBalances)
+	pool.JobWithOptions("snapshot_balances", work.JobOptions{MaxConcurrency: 1}, jobs.SnapshotBalances)
 	pool.PeriodicallyEnqueue("0 * * * * *", "snapshot_balances")
-	//jobs.SnapshotBalances(&work.Job{})
 	pool.Start()
 
 	// Wait for a signal to quit:
@@ -50,15 +53,15 @@ func initJobs()  {
 }
 
 func logJobStartEvent(job *work.Job, next work.NextMiddlewareFunc) error {
-	logger.Info(fmt.Sprintf("Starting job: %s", job.Name))
+	log.Printf("Starting job: %s", job.Name)
 	return next()
 }
 
 func createRedisPool() *redis.Pool {
 	return &redis.Pool{
 		MaxActive: 5,
-		MaxIdle: 5,
-		Wait: true,
+		MaxIdle:   5,
+		Wait:      true,
 		Dial: func() (redis.Conn, error) {
 			connection, err := redis.Dial("tcp", viper.GetString("REDIS_ADDRESS"))
 			if err != nil {

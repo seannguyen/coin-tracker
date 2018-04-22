@@ -14,7 +14,8 @@ CREATE TABLE balances (
   updated_at TIMESTAMP NOT NULL,
   snapshot_id INT NOT NULL REFERENCES snapshots(id),
   currency VARCHAR(10) NOT NULL,
-  amount DECIMAL(32, 16)  NOT NULL
+  amount DECIMAL(32, 16)  NOT NULL,
+  exchange_name VARCHAR (50)
 );
 
 CREATE INDEX balances_on_snapshot_id ON balances USING btree(snapshot_id);

@@ -1,51 +1,81 @@
 package jobs
 
 import (
-	"github.com/seannguyen/coin-tracker/internal/services/bittrex"
-	"github.com/seannguyen/coin-tracker/internal/models/snapshot_model"
-	"github.com/seannguyen/coin-tracker/internal/models/balance_model"
-	"github.com/jinzhu/gorm"
-	"github.com/spf13/viper"
-	"log"
 	"github.com/gocraft/work"
+	"github.com/seannguyen/coin-tracker/internal/services/bittrex"
+	"log"
+	"database/sql"
+	_ "github.com/lib/pq"
+	"github.com/spf13/viper"
+	"github.com/seannguyen/coin-tracker/models"
+	"gopkg.in/volatiletech/null.v6"
+	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/seannguyen/coin-tracker/internal/services/cmc"
 )
 
-var db *gorm.DB
-
-func init() {
-	initDatabase()
-}
+var db *sql.DB
 
 func SnapshotBalances(_ *work.Job) error {
+	initDatabase()
 	balances, err := bittrex.GetBalances()
 	if err != nil {
 		return err
 	}
+	log.Println("Successfully fetching bittrex balances")
 
 	saveBalancesSnapshot(balances)
 	return nil
 }
 
 func initDatabase() {
-	database, err := gorm.Open("postgres", viper.Get("DB_CONNECTION_STRING"))
+	var err error
+	db, err = sql.Open("postgres", viper.GetString("DB_CONNECTION_STRING"))
 	if err != nil {
 		log.Panic(err)
 	}
-	log.Println("successfully connected to db")
-	db = database
-
-	//db.LogMode(true)
+	boil.SetDB(db)
+	log.Println("Successfully connected to db")
 }
 
-func destroy() {
-	db.Close()
+func saveBalancesSnapshot(balancesData []bittrex.BalanceData) {
+	transaction, err := db.Begin()
+	if err != nil { log.Panic(err) }
+	snapshot := insertSnapshot()
+	balances := addBalancesToSnapshot(snapshot, balancesData)
+	addFiatValuesToBalances(balances)
+	transaction.Commit()
 }
 
-func saveBalancesSnapshot(balances []bittrex.BalanceData)  {
-	snapshot := snapshot_model.Snapshot{}
-	db.Create(&snapshot)
+func insertSnapshot() *models.Snapshot {
+	snapshot := models.Snapshot{}
+	snapshot.InsertGP()
+	log.Println("Successfully create snapshot")
+	return &snapshot
+}
 
-	for _, balance := range balances {
-		db.Create(&balance_model.Balance { Currency: balance.Currency, Amount: balance.Amount, Snapshot: snapshot })
+func addBalancesToSnapshot(snapshot *models.Snapshot, balancesData []bittrex.BalanceData) []*models.Balance {
+	for _, balanceData := range balancesData {
+		balance := models.Balance{
+			Amount: balanceData.Amount,
+			Currency: balanceData.Currency,
+			ExchangeName: null.StringFrom("bittrex"),
+		}
+		snapshot.AddBalancesGP(true, &balance)
+	}
+	return snapshot.R.Balances
+}
+
+func addFiatValuesToBalances(balances []*models.Balance) {
+	currencySymbols := make([]string, len(balances), len(balances))
+	for index, balance := range balances {
+		currencySymbols[index] = balance.Currency
+	}
+
+	prices := cmc.GetUsdPrices(currencySymbols)
+
+	for index, price := range prices {
+		amount := price * balances[index].Amount
+		fiatValue := models.FiatValue{ Currency: "USD",	Amount: amount }
+		balances[index].AddFiatValuesGP(true, &fiatValue)
 	}
 }
