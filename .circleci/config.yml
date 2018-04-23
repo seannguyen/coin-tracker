@@ -1,8 +1,4 @@
 version: 2
-general:
-  branches:
-    only:
-      - master
 jobs:
   build:
     docker:
@@ -40,6 +36,10 @@ jobs:
 
 workflows:
   version: 2
+  general:
+    branches:
+      only:
+        - master
   build_and_test:
     jobs:
       - build
