@@ -1,10 +1,9 @@
 version: 2
-general:
-  branches:
-    only:
-     - master
 jobs:
   build:
+    branches:
+      only:
+        - master
     docker:
       - image: seannguyen/coin-tracker-build-base
         environment:
