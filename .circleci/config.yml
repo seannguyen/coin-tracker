@@ -23,7 +23,7 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: 'DB migration'
-          command: goose postgres "user=root dbname=coin-tracker-test sslmode=disable" up
+          command: goose -dir ./db/migrations postgres "user=root dbname=coin-tracker-test sslmode=disable" up
       - run:
           name: 'Configure SQLBoiler'
           command: echo -e '[postgres]\nhost="127.0.0.1"\nport=5432\nuser="root"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > $ROOTPATH/sqlboiler.toml
