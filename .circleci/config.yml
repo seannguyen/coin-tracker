@@ -2,7 +2,7 @@ version: 2
 general:
   branches:
     only:
-     - master
+      - master
 jobs:
   build:
     docker:
