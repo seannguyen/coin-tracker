@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.9.5
+      - image: seannguyen/coin-tracker-build-base
         environment:
           ROOTPATH: /go/src/github.com/seannguyen/coin-tracker
       - image: circleci/postgres:9.6-alpine
@@ -13,14 +13,26 @@ jobs:
     working_directory: /go/src/github.com/seannguyen/coin-tracker
     steps:
       - checkout
-      - run: go get -u github.com/pressly/goose/cmd/goose
-      - run: goose postgres "user=root dbname=coin-tracker-test sslmode=disable" up
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.3.0
+      - run:
+          name: 'Wait for DB'
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: 'DB migration'
+          command: goose postgres "user=root dbname=coin-tracker-test sslmode=disable" up
       - run:
           name: 'Configure SQLBoiler'
           command: echo -e '[postgres]\nhost="127.0.0.1"\nport=5432\nuser="root"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > $ROOTPATH/sqlboiler.toml
-      - run: go get -u -t github.com/volatiletech/sqlboiler
-      - run: go get -v -t -d ./...
-      - run: go test -v ./...
+      - run:
+          name: 'Install dependencies'
+          command: go get -v -t -d ./...
+      - run:
+          name: 'Test'
+          command: go test -v ./...
 
 workflows:
   version: 2
