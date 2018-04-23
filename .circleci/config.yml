@@ -1,15 +1,29 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
-  test:
+  build:
     docker:
       - image: circleci/golang:1.9.5
-      - image: circleci/postgres:9.6-alpine-ram
+        environment:
+          ROOTPATH: /go/src/github.com/seannguyen/coin-tracker
+      - image: circleci/postgres:9.6-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: coin-tracker-test
 
     working_directory: /go/src/github.com/seannguyen/coin-tracker
     steps:
       - checkout
+      - run: go get -u github.com/pressly/goose/cmd/goose
+      - run: goose postgres "user=root dbname=coin-tracker-test sslmode=disable" up
+      - run:
+          name: 'Configure SQLBoiler'
+          command: echo -e '[postgres]\nhost="127.0.0.1"\nport=5432\nuser="root"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > $ROOTPATH/sqlboiler.toml
+      - run: go get -u -t github.com/volatiletech/sqlboiler
       - run: go get -v -t -d ./...
       - run: go test -v ./...
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
