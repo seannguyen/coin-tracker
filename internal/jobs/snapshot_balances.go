@@ -17,6 +17,8 @@ var db *sql.DB
 
 func SnapshotBalances(_ *work.Job) error {
 	initDatabase()
+	defer db.Close()
+
 	balances, err := bittrex.GetBalances()
 	if err != nil {
 		return err
