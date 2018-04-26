@@ -34,11 +34,53 @@ jobs:
           name: 'Test'
           command: go test -v ./...
 
+  publish_image:
+    docker:
+      - image: seannguyen/coin-tracker-build-base
+        environment:
+          ROOTPATH: /go/src/github.com/seannguyen/coin-tracker
+
+    working_directory: /go/src/github.com/seannguyen/coin-tracker
+    steps:
+      - checkout
+      - run:
+          name: 'Install dependencies'
+          command: go get -v -d ./...
+      - run:
+          name: 'Publish Image'
+          command: make publish-image
+
+  deploy:
+    docker:
+      - image: seannguyen/coin-tracker-build-base
+
+    working_directory: /go/src/github.com/seannguyen/coin-tracker
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "b1:9e:d5:11:7a:cd:36:9b:6d:73:02:54:ee:ad:70:28"
+      - run:
+          name: 'Deploying'
+          command: make deploy
+
 workflows:
   version: 2
-  build_and_test:
+  build_and_deploy:
     jobs:
       - build:
+          filters:
+            branches:
+              only: master
+      - publish_image:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - publish_image
           filters:
             branches:
               only: master

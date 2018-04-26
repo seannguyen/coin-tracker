@@ -7,8 +7,7 @@ publish-image:
  	docker push seannguyen/coin-tracker;
 
 deploy:
-	for host in $DEPLOY_HOSTS \
-	do \
-		cat scripts/pull_image_and_restart_container.sh | ssh ${DEPLOY_USERNAME}@${host} -t \
-	done
+	 for host in $${DEPLOY_HOSTS} ; do \
+		 cat scripts/pull_image_and_restart_container.sh | ssh -o "StrictHostKeyChecking no" $${DEPLOY_USERNAME}@$${host} -t; \
+	 done
 
