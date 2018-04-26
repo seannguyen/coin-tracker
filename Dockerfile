@@ -1,4 +1,4 @@
-FROM coin-tracker-build-base
+FROM seannguyen/coin-tracker-build-base
 
 WORKDIR /go/src/github.com/seannguyen/coin-tracker
 COPY . .
