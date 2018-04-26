@@ -5,6 +5,9 @@ COPY . .
 
 RUN apt-get update
 RUN apt-get install postgresql-contrib-9.6 -y
+RUN curl -q https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_18.03.1~ce-0~ubuntu_amd64.deb > docker_installer.deb
+RUN dpkg -i docker_installer.deb; apt-get install -fy
+
 RUN go get -d -t -v ./...
 RUN go get -u github.com/volatiletech/sqlboiler
 RUN go get -u github.com/pressly/goose/cmd/goose

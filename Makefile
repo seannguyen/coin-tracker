@@ -1,9 +1,9 @@
 publish-build-base-image:
-	docker build -t seannguyen/coin-tracker-build-base -f DockerfileBuildBase . ; \
+	docker build -t seannguyen/coin-tracker-build-base -f DockerfileBuildBase . && \
 	docker push seannguyen/coin-tracker-build-base;
 
 publish-image:
-	docker build -t seannguyen/coin-tracker . ; \
+	docker build -t seannguyen/coin-tracker . && \
  	docker push seannguyen/coin-tracker;
 
 deploy:
