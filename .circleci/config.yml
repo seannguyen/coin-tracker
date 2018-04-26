@@ -47,6 +47,9 @@ jobs:
           name: 'Install dependencies'
           command: go get -v -d ./...
       - run:
+          name: 'Docker Login'
+          command: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run:
           name: 'Publish Image'
           command: make publish-image
 
