@@ -1,19 +1,17 @@
 package bittrex
 
 import (
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/spf13/viper"
 	"github.com/toorop/go-bittrex"
 	"log"
 )
 
-type BalanceData struct {
-	Currency string
-	Amount   float64
-}
-
 var client *bittrex.Bittrex
 
-func GetBalances() ([]BalanceData, error) {
+type Exchange struct{}
+
+func (*Exchange) GetBalances() ([]*cryto_exchanges.BalanceData, error) {
 	balances, err := apiClient().GetBalances()
 	if err != nil {
 		log.Printf("Cannot get balances: %s", err)
@@ -22,11 +20,15 @@ func GetBalances() ([]BalanceData, error) {
 
 	log.Println("Get balances successfully")
 
-	balanceDataList := make([]BalanceData, len(balances))
+	var balanceDataList []*cryto_exchanges.BalanceData
 
-	for index, balance := range balances {
+	for _, balance := range balances {
 		amount, _ := balance.Balance.Float64()
-		balanceDataList[index] = BalanceData{Currency: balance.Currency, Amount: amount}
+		if amount == 0 {
+			continue
+		}
+		balance := cryto_exchanges.BalanceData{Currency: balance.Currency, Amount: amount, Type: cryto_exchanges.Crypto}
+		balanceDataList = append(balanceDataList, &balance)
 	}
 
 	return balanceDataList, nil

@@ -22,7 +22,9 @@ func GetUsdPrices(symbols []string) []float64 {
 
 func getCoinsDataKeyBySymbol() map[string]coinmarketcap.Coin {
 	coinsData, err := coinmarketcap.GetAllCoinData(allCoinDataLimit)
-	if err != nil { log.Panic(err)}
+	if err != nil {
+		log.Panic(err)
+	}
 
 	dataKeyBySymbol := make(map[string]coinmarketcap.Coin)
 	for _, coinData := range coinsData {

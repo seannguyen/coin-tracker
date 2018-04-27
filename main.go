@@ -4,19 +4,20 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/gocraft/work"
 	"github.com/seannguyen/coin-tracker/internal/jobs"
+	"github.com/seannguyen/coin-tracker/internal/utilities"
 	"github.com/spf13/viper"
+	"github.com/volatiletech/sqlboiler/boil"
 	"log"
 	"os"
 	"os/signal"
-	"github.com/seannguyen/coin-tracker/internal/utilities"
-	"github.com/volatiletech/sqlboiler/boil"
 )
 
 type Context struct{}
 
 func main() {
 	initConfigs()
-	initJobs()
+	jobs.SnapshotBalances(&work.Job{})
+	//initJobs()
 }
 
 func initConfigs() {

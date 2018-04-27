@@ -784,7 +784,7 @@ func testBalancesSelect(t *testing.T) {
 }
 
 var (
-	balanceDBTypes = map[string]string{`Amount`: `numeric`, `CreatedAt`: `timestamp without time zone`, `Currency`: `character varying`, `ExchangeName`: `character varying`, `ID`: `integer`, `SnapshotID`: `integer`, `UpdatedAt`: `timestamp without time zone`}
+	balanceDBTypes = map[string]string{`Amount`: `numeric`, `CreatedAt`: `timestamp without time zone`, `Currency`: `character varying`, `ExchangeName`: `character varying`, `ID`: `integer`, `SnapshotID`: `integer`, `Type`: `integer`, `UpdatedAt`: `timestamp without time zone`}
 	_              = bytes.MinRead
 )
 

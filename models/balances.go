@@ -29,6 +29,7 @@ type Balance struct {
 	Currency     string      `boil:"currency" json:"currency" toml:"currency" yaml:"currency"`
 	Amount       float64     `boil:"amount" json:"amount" toml:"amount" yaml:"amount"`
 	ExchangeName null.String `boil:"exchange_name" json:"exchange_name,omitempty" toml:"exchange_name" yaml:"exchange_name,omitempty"`
+	Type         int         `boil:"type" json:"type" toml:"type" yaml:"type"`
 
 	R *balanceR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L balanceL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -42,6 +43,7 @@ var BalanceColumns = struct {
 	Currency     string
 	Amount       string
 	ExchangeName string
+	Type         string
 }{
 	ID:           "id",
 	CreatedAt:    "created_at",
@@ -50,6 +52,7 @@ var BalanceColumns = struct {
 	Currency:     "currency",
 	Amount:       "amount",
 	ExchangeName: "exchange_name",
+	Type:         "type",
 }
 
 // balanceR is where relationships are stored.
@@ -62,9 +65,9 @@ type balanceR struct {
 type balanceL struct{}
 
 var (
-	balanceColumns               = []string{"id", "created_at", "updated_at", "snapshot_id", "currency", "amount", "exchange_name"}
+	balanceColumns               = []string{"id", "created_at", "updated_at", "snapshot_id", "currency", "amount", "exchange_name", "type"}
 	balanceColumnsWithoutDefault = []string{"created_at", "updated_at", "snapshot_id", "currency", "amount", "exchange_name"}
-	balanceColumnsWithDefault    = []string{"id"}
+	balanceColumnsWithDefault    = []string{"id", "type"}
 	balancePrimaryKeyColumns     = []string{"id"}
 )
 
