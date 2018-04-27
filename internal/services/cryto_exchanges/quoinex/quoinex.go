@@ -48,7 +48,12 @@ func constructBalancesData(accounts []*account, balanceType int) []*cryto_exchan
 		if account.Balance == 0 {
 			continue
 		}
-		balance := cryto_exchanges.BalanceData{Currency: account.Currency, Amount: account.Balance, Type: balanceType}
+		balance := cryto_exchanges.BalanceData{
+			Currency: account.Currency,
+			Amount: account.Balance,
+			Type: balanceType,
+			ExchangeName: "quoinex",
+		}
 		balances = append(balances, &balance)
 	}
 	return balances

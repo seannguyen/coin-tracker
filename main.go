@@ -16,8 +16,7 @@ type Context struct{}
 
 func main() {
 	initConfigs()
-	jobs.SnapshotBalances(&work.Job{})
-	//initJobs()
+	initJobs()
 }
 
 func initConfigs() {

@@ -9,11 +9,11 @@ import (
 	"github.com/seannguyen/coin-tracker/models"
 	"github.com/spf13/viper"
 	"github.com/volatiletech/sqlboiler/boil"
-	"gopkg.in/volatiletech/null.v6"
 	"log"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bittrex"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/quoinex"
 	"github.com/seannguyen/coin-tracker/internal/services/fiat_exchange"
+	"gopkg.in/volatiletech/null.v6"
 )
 
 var db *sql.DB
@@ -78,7 +78,7 @@ func addBalancesToSnapshot(snapshot *models.Snapshot, balancesData []*cryto_exch
 		balance := models.Balance{
 			Amount:       balanceData.Amount,
 			Currency:     balanceData.Currency,
-			ExchangeName: null.StringFrom("bittrex"),
+			ExchangeName: null.StringFrom(balanceData.ExchangeName),
 			Type: balanceData.Type,
 		}
 		snapshot.AddBalancesGP(true, &balance)
