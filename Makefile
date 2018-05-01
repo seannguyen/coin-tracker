@@ -8,6 +8,6 @@ publish-image:
 
 deploy:
 	 for host in $${DEPLOY_HOSTS} ; do \
-		 cat scripts/pull_image_and_restart_container.sh | ssh -o "StrictHostKeyChecking no" $${DEPLOY_USERNAME}@$${host} -t; \
+		ssh -o "StrictHostKeyChecking no" $${DEPLOY_USERNAME}@$${host} -t "/var/personal-infra/coin-tracker/start_docker.sh"; \
 	 done
 

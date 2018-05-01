@@ -1,9 +1,15 @@
-FROM seannguyen/coin-tracker-build-base
+# build binary
+FROM seannguyen/coin-tracker-build-base as build-base
 
-WORKDIR /go/src/github.com/seannguyen/coin-tracker
+WORKDIR /go//src/github.com/seannguyen/coin-tracker
 COPY . .
 
 RUN go get -d -v ./...
-RUN go install -v ./...
+RUN  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags '-w -extldflags "-static"' -o coin-tracker main.go
 
-ENTRYPOINT ["coin-tracker"]
+# package binary
+FROM alpine:3.7
+
+COPY --from=build-base /go/src/github.com/seannguyen/coin-tracker/coin-tracker /var/app/coin-tracker
+
+ENTRYPOINT ["/var/app/coin-tracker"]

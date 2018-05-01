@@ -6,14 +6,14 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/seannguyen/coin-tracker/internal/services/cmc"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
-	"github.com/seannguyen/coin-tracker/models"
-	"github.com/spf13/viper"
-	"github.com/volatiletech/sqlboiler/boil"
-	"log"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bittrex"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/quoinex"
 	"github.com/seannguyen/coin-tracker/internal/services/fiat_exchange"
+	"github.com/seannguyen/coin-tracker/models"
+	"github.com/spf13/viper"
+	"github.com/volatiletech/sqlboiler/boil"
 	"gopkg.in/volatiletech/null.v6"
+	"log"
 )
 
 var db *sql.DB
@@ -79,7 +79,7 @@ func addBalancesToSnapshot(snapshot *models.Snapshot, balancesData []*cryto_exch
 			Amount:       balanceData.Amount,
 			Currency:     balanceData.Currency,
 			ExchangeName: null.StringFrom(balanceData.ExchangeName),
-			Type: balanceData.Type,
+			Type:         balanceData.Type,
 		}
 		snapshot.AddBalancesGP(true, &balance)
 	}
@@ -102,7 +102,7 @@ func addUsdValuesToBalances(balances []*models.Balance) {
 	addUsdValueToFiatBalances(fiatBalances)
 }
 
-func addUsdValueToCryptoBalances(balances []*models.Balance)  {
+func addUsdValueToCryptoBalances(balances []*models.Balance) {
 	currencySymbols := make([]string, len(balances), len(balances))
 	for index, balance := range balances {
 		currencySymbols[index] = balance.Currency
@@ -117,7 +117,7 @@ func addUsdValueToCryptoBalances(balances []*models.Balance)  {
 	}
 }
 
-func addUsdValueToFiatBalances(balances []*models.Balance)  {
+func addUsdValueToFiatBalances(balances []*models.Balance) {
 	for _, balance := range balances {
 		usdAmount, err := fiat_exchange.ConvertToUsd(balance.Currency, balance.Amount)
 		if err != nil {

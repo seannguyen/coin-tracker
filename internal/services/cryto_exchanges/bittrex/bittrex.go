@@ -28,9 +28,9 @@ func (*Exchange) GetBalances() ([]*cryto_exchanges.BalanceData, error) {
 			continue
 		}
 		balance := cryto_exchanges.BalanceData{
-			Currency: balance.Currency,
-			Amount: amount,
-			Type: cryto_exchanges.Crypto,
+			Currency:     balance.Currency,
+			Amount:       amount,
+			Type:         cryto_exchanges.Crypto,
 			ExchangeName: "bittrex",
 		}
 		balanceDataList = append(balanceDataList, &balance)

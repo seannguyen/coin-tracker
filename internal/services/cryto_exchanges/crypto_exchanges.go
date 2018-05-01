@@ -6,10 +6,10 @@ const (
 )
 
 type BalanceData struct {
-	Currency 		string
-	Amount   		float64
-	Type     		int
-	ExchangeName 	string
+	Currency     string
+	Amount       float64
+	Type         int
+	ExchangeName string
 }
 
 type ExchangeInterface interface {
