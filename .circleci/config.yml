@@ -57,7 +57,6 @@ jobs:
   deploy:
     docker:
       - image: seannguyen/coin-tracker-build-base
-
     working_directory: /go/src/github.com/seannguyen/coin-tracker
     steps:
       - checkout

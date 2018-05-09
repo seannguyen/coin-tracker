@@ -1,16 +1,14 @@
-FROM golang:1.9.5
+FROM golang:1.9.5-alpine
 
 WORKDIR /go/src/github.com/seannguyen/coin-tracker
 COPY . .
 
-RUN apt-get update
-RUN apt-get install postgresql-contrib-9.6 -y
-RUN curl -q https://download.docker.com/linux/ubuntu/dists/xenial/pool/stable/amd64/docker-ce_18.03.1~ce-0~ubuntu_amd64.deb > docker_installer.deb
-RUN dpkg -i docker_installer.deb; apt-get install -fy
-
+RUN apk update && \
+    apk upgrade && \
+    apk add git postgresql gcc g++
 RUN go get -d -t -v ./...
-RUN go get -u github.com/volatiletech/sqlboiler
-RUN go get -u github.com/pressly/goose/cmd/goose
+RUN go get -u -v github.com/volatiletech/sqlboiler
+RUN go get -u -v github.com/pressly/goose/cmd/goose
 RUN cd ../ && rm -rf ./coin-tracker
 
-ENTRYPOINT ["bash"]
+ENTRYPOINT ["sh"]
