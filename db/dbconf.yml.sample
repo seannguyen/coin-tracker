@@ -1,4 +1,0 @@
-development:
-    driver: postgres
-    open: host=locahost port=5432 user=seannguyen password=password12 dbname=coin-tracker sslmode=disable
-

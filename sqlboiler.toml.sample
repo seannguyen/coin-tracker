@@ -6,3 +6,4 @@ schema="public"
   port=5432
   user="seannguyen"
   pass="password12"
+  sslmode="disable"
