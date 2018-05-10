@@ -5,7 +5,7 @@ COPY . .
 
 RUN apk update && \
     apk upgrade && \
-    apk add git postgresql gcc g++
+    apk add git postgresql gcc g++ openssl
 RUN go get -d -t -v ./...
 RUN go get -u -v github.com/volatiletech/sqlboiler
 RUN go get -u -v github.com/pressly/goose/cmd/goose
