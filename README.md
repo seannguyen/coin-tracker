@@ -1,4 +1,5 @@
 # Coin Tracker
+Tracker for crypto currencies on various exchanges
 
 ## DB Migration
 App
