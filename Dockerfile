@@ -1,7 +1,7 @@
 # build binary
 FROM seannguyen/coin-tracker-build-base as build-base
 
-WORKDIR /go//src/github.com/seannguyen/coin-tracker
+WORKDIR /go/src/github.com/seannguyen/coin-tracker
 COPY . .
 
 RUN go get -d -v ./...
