@@ -20,6 +20,7 @@ func main() {
 }
 
 func initConfigs() {
+	log.Println("Initializing configs")
 	viper.AutomaticEnv()
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./configs")
@@ -33,6 +34,7 @@ func initConfigs() {
 }
 
 func initJobs() {
+	log.Println("Initializing jobs")
 	redisPool := createRedisPool()
 	pool := work.NewWorkerPool(Context{}, 2, "coin-tracker", redisPool)
 
@@ -58,6 +60,7 @@ func logJobStartEvent(job *work.Job, next work.NextMiddlewareFunc) error {
 }
 
 func createRedisPool() *redis.Pool {
+	log.Println("Creating redis connection pool")
 	return &redis.Pool{
 		MaxActive: 5,
 		MaxIdle:   5,
