@@ -13,4 +13,6 @@ FROM alpine:3.7
 RUN apk add --update ca-certificates
 COPY --from=build-base /go/src/github.com/seannguyen/coin-tracker/coin-tracker /var/app/coin-tracker
 
-ENTRYPOINT ["/var/app/coin-tracker"]
+WORKDIR /var/app/
+
+ENTRYPOINT ["./coin-tracker"]

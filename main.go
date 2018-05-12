@@ -16,7 +16,8 @@ type Context struct{}
 
 func main() {
 	initConfigs()
-	initJobs()
+	redisPool := createRedisPool()
+	initJobs(redisPool)
 }
 
 func initConfigs() {
@@ -33,9 +34,8 @@ func initConfigs() {
 	}
 }
 
-func initJobs() {
+func initJobs(redisPool *redis.Pool) {
 	log.Println("Initializing jobs")
-	redisPool := createRedisPool()
 	pool := work.NewWorkerPool(Context{}, 2, "coin-tracker", redisPool)
 
 	pool.Middleware(logJobStartEvent)
