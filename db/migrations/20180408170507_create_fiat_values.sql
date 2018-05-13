@@ -14,7 +14,7 @@ CREATE TABLE fiat_values (
   updated_at TIMESTAMP NOT NULL,
   balance_id INT NOT NULL REFERENCES balances(id),
   currency VARCHAR(10) NOT NULL,
-  amount DECIMAL(32, 16)  NOT NULL
+  amount DECIMAL(32, 16) NOT NULL
 );
 ALTER SEQUENCE fiat_values_id_seq OWNED BY fiat_values.id;
 
