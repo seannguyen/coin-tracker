@@ -113,8 +113,8 @@ func addUsdValueToCryptoBalances(balances []*models.Balance) {
 	prices := cmc.GetUsdPrices(currencySymbols)
 
 	for index, price := range prices {
-		amount := price * balances[index].Amount
-		fiatValue := models.FiatValue{Currency: "USD", AmountCents: int64(amount * 100)}
+		usdAmountCents := int64(price * balances[index].Amount * 100)
+		fiatValue := models.FiatValue{Currency: "USD", AmountCents: usdAmountCents}
 		balances[index].AddFiatValuesGP(true, &fiatValue)
 	}
 }
