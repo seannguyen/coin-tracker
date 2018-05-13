@@ -638,7 +638,7 @@ func testFiatValuesSelect(t *testing.T) {
 }
 
 var (
-	fiatValueDBTypes = map[string]string{`Amount`: `numeric`, `BalanceID`: `integer`, `CreatedAt`: `timestamp without time zone`, `Currency`: `character varying`, `ID`: `integer`, `UpdatedAt`: `timestamp without time zone`}
+	fiatValueDBTypes = map[string]string{`Amount`: `numeric`, `AmountCents`: `bigint`, `BalanceID`: `integer`, `CreatedAt`: `timestamp without time zone`, `Currency`: `character varying`, `ID`: `integer`, `UpdatedAt`: `timestamp without time zone`}
 	_                = bytes.MinRead
 )
 

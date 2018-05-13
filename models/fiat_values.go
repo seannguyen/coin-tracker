@@ -21,31 +21,34 @@ import (
 
 // FiatValue is an object representing the database table.
 type FiatValue struct {
-	ID        int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	BalanceID int       `boil:"balance_id" json:"balance_id" toml:"balance_id" yaml:"balance_id"`
-	Currency  string    `boil:"currency" json:"currency" toml:"currency" yaml:"currency"`
-	Amount    float64   `boil:"amount" json:"amount" toml:"amount" yaml:"amount"`
+	ID          int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt   time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt   time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	BalanceID   int       `boil:"balance_id" json:"balance_id" toml:"balance_id" yaml:"balance_id"`
+	Currency    string    `boil:"currency" json:"currency" toml:"currency" yaml:"currency"`
+	AmountCents int64     `boil:"amount_cents" json:"amount_cents" toml:"amount_cents" yaml:"amount_cents"`
+	Amount      float64   `boil:"amount" json:"amount" toml:"amount" yaml:"amount"`
 
 	R *fiatValueR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L fiatValueL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var FiatValueColumns = struct {
-	ID        string
-	CreatedAt string
-	UpdatedAt string
-	BalanceID string
-	Currency  string
-	Amount    string
+	ID          string
+	CreatedAt   string
+	UpdatedAt   string
+	BalanceID   string
+	Currency    string
+	AmountCents string
+	Amount      string
 }{
-	ID:        "id",
-	CreatedAt: "created_at",
-	UpdatedAt: "updated_at",
-	BalanceID: "balance_id",
-	Currency:  "currency",
-	Amount:    "amount",
+	ID:          "id",
+	CreatedAt:   "created_at",
+	UpdatedAt:   "updated_at",
+	BalanceID:   "balance_id",
+	Currency:    "currency",
+	AmountCents: "amount_cents",
+	Amount:      "amount",
 }
 
 // fiatValueR is where relationships are stored.
@@ -57,9 +60,9 @@ type fiatValueR struct {
 type fiatValueL struct{}
 
 var (
-	fiatValueColumns               = []string{"id", "created_at", "updated_at", "balance_id", "currency", "amount"}
-	fiatValueColumnsWithoutDefault = []string{"created_at", "updated_at", "balance_id", "currency", "amount"}
-	fiatValueColumnsWithDefault    = []string{"id"}
+	fiatValueColumns               = []string{"id", "created_at", "updated_at", "balance_id", "currency", "amount_cents", "amount"}
+	fiatValueColumnsWithoutDefault = []string{"created_at", "updated_at", "balance_id", "currency"}
+	fiatValueColumnsWithDefault    = []string{"id", "amount_cents", "amount"}
 	fiatValuePrimaryKeyColumns     = []string{"id"}
 )
 
