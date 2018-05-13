@@ -41,7 +41,7 @@ func getBalances(client *coinbase.APIClient) ([]*cryto_exchanges.BalanceData, er
 
 	balanceByCurrency := make(map[string]float64)
 	for _, accountData := range accounts.Data {
-		balanceByCurrency[accountData.Currency] += accountData.Native_balance.Amount
+		balanceByCurrency[accountData.Currency] += accountData.Balance.Amount
 	}
 
 	balances := make([]*cryto_exchanges.BalanceData, 0)
