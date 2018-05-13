@@ -114,7 +114,7 @@ func addUsdValueToCryptoBalances(balances []*models.Balance) {
 
 	for index, price := range prices {
 		amount := price * balances[index].Amount
-		fiatValue := models.FiatValue{Currency: "USD", Amount: amount}
+		fiatValue := models.FiatValue{Currency: "USD", AmountCents: int64(amount * 100)}
 		balances[index].AddFiatValuesGP(true, &fiatValue)
 	}
 }
@@ -125,7 +125,7 @@ func addUsdValueToFiatBalances(balances []*models.Balance) {
 		if err != nil {
 			panic(err)
 		}
-		fiatValue := models.FiatValue{Currency: "USD", Amount: usdAmount}
+		fiatValue := models.FiatValue{Currency: "USD", AmountCents: int64(usdAmount * 100)}
 		balance.AddFiatValuesGP(true, &fiatValue)
 	}
 }
