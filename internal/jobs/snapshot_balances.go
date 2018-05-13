@@ -14,6 +14,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"gopkg.in/volatiletech/null.v6"
 	"log"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/coinbase"
 )
 
 var db *sql.DB
@@ -32,7 +33,7 @@ func SnapshotBalances(_ *work.Job) error {
 		allBalances = append(allBalances, exchangeBalances...)
 	}
 
-	log.Println("Successfully fetching bittrex balances")
+	log.Println("Successfully fetching balances")
 
 	saveBalancesSnapshot(allBalances)
 	return nil
@@ -42,6 +43,7 @@ func getAllExchanges() []cryto_exchanges.ExchangeInterface {
 	return []cryto_exchanges.ExchangeInterface{
 		&bittrex.Exchange{},
 		&quoinex.Exchange{},
+		&coinbase.Exchange{},
 	}
 }
 
