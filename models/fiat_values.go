@@ -27,7 +27,6 @@ type FiatValue struct {
 	BalanceID   int       `boil:"balance_id" json:"balance_id" toml:"balance_id" yaml:"balance_id"`
 	Currency    string    `boil:"currency" json:"currency" toml:"currency" yaml:"currency"`
 	AmountCents int64     `boil:"amount_cents" json:"amount_cents" toml:"amount_cents" yaml:"amount_cents"`
-	Amount      float64   `boil:"amount" json:"amount" toml:"amount" yaml:"amount"`
 
 	R *fiatValueR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L fiatValueL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -40,7 +39,6 @@ var FiatValueColumns = struct {
 	BalanceID   string
 	Currency    string
 	AmountCents string
-	Amount      string
 }{
 	ID:          "id",
 	CreatedAt:   "created_at",
@@ -48,7 +46,6 @@ var FiatValueColumns = struct {
 	BalanceID:   "balance_id",
 	Currency:    "currency",
 	AmountCents: "amount_cents",
-	Amount:      "amount",
 }
 
 // fiatValueR is where relationships are stored.
@@ -60,9 +57,9 @@ type fiatValueR struct {
 type fiatValueL struct{}
 
 var (
-	fiatValueColumns               = []string{"id", "created_at", "updated_at", "balance_id", "currency", "amount_cents", "amount"}
-	fiatValueColumnsWithoutDefault = []string{"created_at", "updated_at", "balance_id", "currency"}
-	fiatValueColumnsWithDefault    = []string{"id", "amount_cents", "amount"}
+	fiatValueColumns               = []string{"id", "created_at", "updated_at", "balance_id", "currency", "amount_cents"}
+	fiatValueColumnsWithoutDefault = []string{"created_at", "updated_at", "balance_id", "currency", "amount_cents"}
+	fiatValueColumnsWithDefault    = []string{"id"}
 	fiatValuePrimaryKeyColumns     = []string{"id"}
 )
 
