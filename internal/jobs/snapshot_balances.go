@@ -15,6 +15,7 @@ import (
 	"gopkg.in/volatiletech/null.v6"
 	"log"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/coinbase"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bitfinex"
 )
 
 var db *sql.DB
@@ -44,6 +45,7 @@ func getAllExchanges() []cryto_exchanges.ExchangeInterface {
 		&bittrex.Exchange{},
 		&quoinex.Exchange{},
 		&coinbase.Exchange{},
+		&bitfinex.Exchange{},
 	}
 }
 
