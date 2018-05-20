@@ -9,7 +9,13 @@ import (
 	"strings"
 )
 
-const exchangeName = "bitfinex"
+const (
+	exchangeName = "bitfinex"
+)
+
+var externalCurrenciesMap = map[string]string{
+	"IOT": "MIOTA",
+}
 
 type Exchange struct{}
 
@@ -35,7 +41,7 @@ func (*Exchange) GetBalances() ([]*cryto_exchanges.BalanceData, error) {
 			Type: getCurrencyType(currency),
 			Amount: amount,
 			ExchangeName: exchangeName,
-			Currency: currency,
+			Currency: getExternalCurrencySymbol(currency),
 		})
 	}
 	return balancesData, nil
@@ -47,4 +53,12 @@ func getCurrencyType(currency string) int {
 		return cryto_exchanges.Fiat
 	}
 	return cryto_exchanges.Crypto
+}
+
+func getExternalCurrencySymbol(internalSymbol string) string {
+	externalCurrency, ok := externalCurrenciesMap[internalSymbol]
+	if ok {
+		return externalCurrency
+	}
+	return internalSymbol
 }
