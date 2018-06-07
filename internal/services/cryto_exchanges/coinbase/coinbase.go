@@ -1,12 +1,12 @@
 package coinbase
 
 import (
-	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
-	"github.com/Zauberstuhl/go-coinbase"
+	"errors"
 	"fmt"
+	"github.com/Zauberstuhl/go-coinbase"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/spf13/viper"
 	"strings"
-	"errors"
 )
 
 const exchangeName = "coinbase"
@@ -20,7 +20,7 @@ func (*Exchange) GetBalances() ([]*cryto_exchanges.BalanceData, error) {
 
 func getApiClient() coinbase.APIClient {
 	return coinbase.APIClient{
-		Key: viper.GetString("COINBASE_API_KEY"),
+		Key:    viper.GetString("COINBASE_API_KEY"),
 		Secret: viper.GetString("COINBASE_API_SECRET"),
 	}
 }
@@ -50,10 +50,10 @@ func getBalances(client *coinbase.APIClient) ([]*cryto_exchanges.BalanceData, er
 			continue
 		}
 		balanceData := cryto_exchanges.BalanceData{
-			Currency: currency,
-			Amount: balance,
+			Currency:     currency,
+			Amount:       balance,
 			ExchangeName: exchangeName,
-			Type: cryto_exchanges.Crypto,
+			Type:         cryto_exchanges.Crypto,
 		}
 		balances = append(balances, &balanceData)
 	}

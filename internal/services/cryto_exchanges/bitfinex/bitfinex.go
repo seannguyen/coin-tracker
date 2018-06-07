@@ -1,11 +1,11 @@
 package bitfinex
 
 import (
-	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/bitfinexcom/bitfinex-api-go/v1"
+	"github.com/rhymond/go-money"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/spf13/viper"
 	"strconv"
-	"github.com/rhymond/go-money"
 	"strings"
 )
 
@@ -38,10 +38,10 @@ func (*Exchange) GetBalances() ([]*cryto_exchanges.BalanceData, error) {
 		}
 		currency := strings.ToUpper(balance.Currency)
 		balancesData = append(balancesData, &cryto_exchanges.BalanceData{
-			Type: getCurrencyType(currency),
-			Amount: amount,
+			Type:         getCurrencyType(currency),
+			Amount:       amount,
 			ExchangeName: exchangeName,
-			Currency: getExternalCurrencySymbol(currency),
+			Currency:     getExternalCurrencySymbol(currency),
 		})
 	}
 	return balancesData, nil

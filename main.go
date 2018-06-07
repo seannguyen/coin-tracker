@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/garyburd/redigo/redis"
 	"github.com/gocraft/work"
+	"github.com/gomodule/redigo/redis"
 	"github.com/seannguyen/coin-tracker/internal/jobs"
 	"github.com/seannguyen/coin-tracker/internal/utilities"
 	"github.com/spf13/viper"

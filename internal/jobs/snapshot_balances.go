@@ -6,7 +6,9 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/seannguyen/coin-tracker/internal/services/cmc"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bitfinex"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bittrex"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/coinbase"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/quoinex"
 	"github.com/seannguyen/coin-tracker/internal/services/fiat_exchange"
 	"github.com/seannguyen/coin-tracker/models"
@@ -14,8 +16,6 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 	"gopkg.in/volatiletech/null.v6"
 	"log"
-	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/coinbase"
-	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bitfinex"
 )
 
 var db *sql.DB
