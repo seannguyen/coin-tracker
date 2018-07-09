@@ -18,11 +18,14 @@ import (
 	"log"
 )
 
-var db *sql.DB
-
 func SnapshotBalances(_ *work.Job) error {
-	initDatabase()
-	defer db.Close()
+	db := initDatabase()
+	defer func() {
+		err := db.Close()
+		if err != nil {
+			log.Panic(err)
+		}
+	}()
 
 	var allBalances []*cryto_exchanges.BalanceData
 	exchanges := getAllExchanges()
@@ -36,7 +39,7 @@ func SnapshotBalances(_ *work.Job) error {
 
 	log.Println("Successfully fetching balances")
 
-	saveBalancesSnapshot(allBalances)
+	saveBalancesSnapshot(db, allBalances)
 	return nil
 }
 
@@ -49,35 +52,46 @@ func getAllExchanges() []cryto_exchanges.ExchangeInterface {
 	}
 }
 
-func initDatabase() {
-	var err error
-	db, err = sql.Open("postgres", viper.GetString("DB_CONNECTION_STRING"))
+func initDatabase() *sql.DB {
+	db, err := sql.Open("postgres", viper.GetString("DB_CONNECTION_STRING"))
 	if err != nil {
 		log.Panic(err)
 	}
 	boil.SetDB(db)
 	log.Println("Successfully connected to db")
+	return db
 }
 
-func saveBalancesSnapshot(balancesData []*cryto_exchanges.BalanceData) {
+func saveBalancesSnapshot(db *sql.DB, balancesData []*cryto_exchanges.BalanceData) {
 	transaction, err := db.Begin()
 	if err != nil {
 		log.Panic(err)
 	}
-	snapshot := insertSnapshot()
-	balances := addBalancesToSnapshot(snapshot, balancesData)
-	addUsdValuesToBalances(balances)
-	transaction.Commit()
+	defer func() {
+		var trxErr error
+		if err == nil {
+			trxErr = transaction.Commit()
+		} else {
+			trxErr = transaction.Rollback()
+		}
+		if trxErr != nil {
+			log.Panic(trxErr)
+		}
+	}()
+
+	snapshot := insertSnapshot(transaction)
+	balances := addBalancesToSnapshot(transaction, snapshot, balancesData)
+	addUsdValuesToBalances(transaction, balances)
 }
 
-func insertSnapshot() *models.Snapshot {
+func insertSnapshot(transaction *sql.Tx) *models.Snapshot {
 	snapshot := models.Snapshot{}
-	snapshot.InsertGP()
+	snapshot.InsertP(transaction)
 	log.Println("Successfully create snapshot")
 	return &snapshot
 }
 
-func addBalancesToSnapshot(snapshot *models.Snapshot, balancesData []*cryto_exchanges.BalanceData) []*models.Balance {
+func addBalancesToSnapshot(transaction *sql.Tx, snapshot *models.Snapshot, balancesData []*cryto_exchanges.BalanceData) []*models.Balance {
 	for _, balanceData := range balancesData {
 		balance := models.Balance{
 			Amount:       balanceData.Amount,
@@ -85,12 +99,12 @@ func addBalancesToSnapshot(snapshot *models.Snapshot, balancesData []*cryto_exch
 			ExchangeName: null.StringFrom(balanceData.ExchangeName),
 			Type:         balanceData.Type,
 		}
-		snapshot.AddBalancesGP(true, &balance)
+		snapshot.AddBalancesP(transaction, true, &balance)
 	}
 	return snapshot.R.Balances
 }
 
-func addUsdValuesToBalances(balances []*models.Balance) {
+func addUsdValuesToBalances(transaction *sql.Tx, balances []*models.Balance) {
 	var cryptoBalances, fiatBalances []*models.Balance
 	for _, balance := range balances {
 		switch balance.Type {
@@ -102,11 +116,11 @@ func addUsdValuesToBalances(balances []*models.Balance) {
 			panic("balance is missing type")
 		}
 	}
-	addUsdValueToCryptoBalances(cryptoBalances)
-	addUsdValueToFiatBalances(fiatBalances)
+	addUsdValueToCryptoBalances(transaction, cryptoBalances)
+	addUsdValueToFiatBalances(transaction, fiatBalances)
 }
 
-func addUsdValueToCryptoBalances(balances []*models.Balance) {
+func addUsdValueToCryptoBalances(transaction *sql.Tx, balances []*models.Balance) {
 	currencySymbols := make([]string, len(balances), len(balances))
 	for index, balance := range balances {
 		currencySymbols[index] = balance.Currency
@@ -117,17 +131,17 @@ func addUsdValueToCryptoBalances(balances []*models.Balance) {
 	for index, price := range prices {
 		usdAmountCents := int64(price * balances[index].Amount * 100)
 		fiatValue := models.FiatValue{Currency: "USD", AmountCents: usdAmountCents}
-		balances[index].AddFiatValuesGP(true, &fiatValue)
+		balances[index].AddFiatValuesP(transaction, true, &fiatValue)
 	}
 }
 
-func addUsdValueToFiatBalances(balances []*models.Balance) {
+func addUsdValueToFiatBalances(transaction *sql.Tx, balances []*models.Balance) {
 	for _, balance := range balances {
 		usdAmount, err := fiat_exchange.ConvertToUsd(balance.Currency, balance.Amount)
 		if err != nil {
 			panic(err)
 		}
 		fiatValue := models.FiatValue{Currency: "USD", AmountCents: int64(usdAmount * 100)}
-		balance.AddFiatValuesGP(true, &fiatValue)
+		balance.AddFiatValuesP(transaction, true, &fiatValue)
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/bugsnag/bugsnag-go"
 	"github.com/gocraft/work"
 	"github.com/gomodule/redigo/redis"
 	"github.com/seannguyen/coin-tracker/internal/jobs"
@@ -10,7 +11,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"github.com/bugsnag/bugsnag-go"
 )
 
 type Context struct{}

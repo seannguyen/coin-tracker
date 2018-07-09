@@ -18,7 +18,12 @@ func GetUsdPrices(symbols []string) []float64 {
 
 	prices := make([]float64, len(symbols), len(symbols))
 	for index, symbol := range symbols {
-		prices[index] = coinsData[symbol].Quotes[usdSymbol].Price
+		for _, coinData := range coinsData {
+			if coinData.Symbol == symbol {
+				prices[index] = coinData.Quotes[usdSymbol].Price
+				break
+			}
+		}
 	}
 
 	return prices
