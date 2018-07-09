@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"github.com/bugsnag/bugsnag-go"
 )
 
 type Context struct{}
@@ -39,6 +40,7 @@ func initJobs(redisPool *redis.Pool) {
 	pool := work.NewWorkerPool(Context{}, 2, "coin-tracker", redisPool)
 
 	pool.Middleware(logJobStartEvent)
+	pool.Middleware(reportBugsnag)
 
 	pool.JobWithOptions("snapshot_balances", work.JobOptions{MaxConcurrency: 1}, jobs.SnapshotBalances)
 	pool.PeriodicallyEnqueue("0 */15 * * * *", "snapshot_balances")
@@ -57,6 +59,15 @@ func initJobs(redisPool *redis.Pool) {
 func logJobStartEvent(job *work.Job, next work.NextMiddlewareFunc) error {
 	log.Printf("Starting job: %s", job.Name)
 	return next()
+}
+
+func reportBugsnag(_ *work.Job, next work.NextMiddlewareFunc) error {
+	defer bugsnag.AutoNotify()
+	err := next()
+	if err != nil {
+		bugsnag.Notify(err)
+	}
+	return err
 }
 
 func createRedisPool() *redis.Pool {
