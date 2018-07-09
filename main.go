@@ -16,6 +16,7 @@ import (
 type Context struct{}
 
 func main() {
+	defer bugsnag.AutoNotify()
 	initConfigs()
 	redisPool := createRedisPool()
 	initJobs(redisPool)
@@ -33,6 +34,14 @@ func initConfigs() {
 	if utilities.IsDevelopment() {
 		boil.DebugMode = true
 	}
+	initBugsnag()
+}
+
+func initBugsnag() {
+	bugsnag.Configure(bugsnag.Configuration{
+		APIKey:          viper.GetString("BUGSNAG_API_KEY"),
+		ProjectPackages: []string{"main", "github.com/seannguyen/coin-tracker"},
+	})
 }
 
 func initJobs(redisPool *redis.Pool) {
