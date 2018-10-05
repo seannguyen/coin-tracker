@@ -52,7 +52,7 @@ func initJobs(redisPool *redis.Pool) {
 	pool.Middleware(reportBugsnag)
 
 	pool.JobWithOptions("snapshot_balances", work.JobOptions{MaxConcurrency: 1}, jobs.SnapshotBalances)
-	pool.PeriodicallyEnqueue("0 */15 * * * *", "snapshot_balances")
+	pool.PeriodicallyEnqueue("0 */5 * * * *", "snapshot_balances")
 	pool.Start()
 
 	// Wait for a signal to quit:
