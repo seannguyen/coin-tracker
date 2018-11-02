@@ -1,12 +1,10 @@
 package coinbase
 
 import (
-	"errors"
 	"fmt"
 	"github.com/Zauberstuhl/go-coinbase"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/spf13/viper"
-	"strings"
 )
 
 const exchangeName = "coinbase"
@@ -30,13 +28,6 @@ func getBalances(client *coinbase.APIClient) ([]*cryto_exchanges.BalanceData, er
 	if err != nil {
 		fmt.Println(err)
 		return nil, nil
-	}
-	if len(accounts.Errors) > 0 {
-		errMessages := make([]string, len(accounts.Errors))
-		for index, errMessage := range accounts.Errors {
-			errMessages[index] = errMessage.Message
-		}
-		return nil, errors.New(strings.Join(errMessages, ". "))
 	}
 
 	balanceByCurrency := make(map[string]float64)

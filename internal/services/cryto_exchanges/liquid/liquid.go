@@ -2,6 +2,7 @@ package liquid
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/liquid/jwt"
 	"io/ioutil"
@@ -76,6 +77,11 @@ func getRawAccountData() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(
+			"fail to get balance data, status code %d, message '%s'", response.StatusCode, string(body))
+	}
+
 	return body, nil
 }
 
