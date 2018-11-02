@@ -9,7 +9,7 @@ import (
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bitfinex"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bittrex"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/coinbase"
-	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/quoinex"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/liquid"
 	"github.com/seannguyen/coin-tracker/internal/services/fiat_exchange"
 	"github.com/seannguyen/coin-tracker/models"
 	"github.com/spf13/viper"
@@ -46,7 +46,7 @@ func SnapshotBalances(_ *work.Job) error {
 func getAllExchanges() []cryto_exchanges.ExchangeInterface {
 	return []cryto_exchanges.ExchangeInterface{
 		&bittrex.Exchange{},
-		&quoinex.Exchange{},
+		&liquid.Exchange{},
 		&coinbase.Exchange{},
 		&bitfinex.Exchange{},
 	}

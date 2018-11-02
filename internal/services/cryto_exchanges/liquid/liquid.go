@@ -1,9 +1,9 @@
-package quoinex
+package liquid
 
 import (
 	"encoding/json"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
-	"github.com/seannguyen/coin-tracker/internal/services/jwt"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/liquid/jwt"
 	"io/ioutil"
 	"net/http"
 )
@@ -52,7 +52,7 @@ func constructBalancesData(accounts []*account, balanceType int) []*cryto_exchan
 			Currency:     account.Currency,
 			Amount:       account.Balance,
 			Type:         balanceType,
-			ExchangeName: "quoinex",
+			ExchangeName: "liquid",
 		}
 		balances = append(balances, &balance)
 	}

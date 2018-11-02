@@ -9,7 +9,7 @@ import (
 
 func Create() string {
 	token := getTokenObject()
-	apiSecret := viper.GetString("QUOINEX_API_SECRET")
+	apiSecret := viper.GetString("LIQUID_API_SECRET")
 	tokenString, err := token.SignedString([]byte(apiSecret))
 	if err != nil {
 		log.Panic(err)
@@ -18,7 +18,7 @@ func Create() string {
 }
 
 func getTokenObject() *jwt.Token {
-	apiId := viper.GetString("QUOINEX_API_ID")
+	apiId := viper.GetString("LIQUID_API_ID")
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"path":     "/accounts",
 		"nonce":    time.Now().UnixNano(),
