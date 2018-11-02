@@ -1,4 +1,4 @@
-publish-build-base-image:
+publish-base-image:
 	docker build -t seannguyen/coin-tracker-build-base -f DockerfileBuildBase . && \
 	docker push seannguyen/coin-tracker-build-base;
 

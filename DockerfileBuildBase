@@ -1,15 +1,10 @@
-FROM golang:1.9.5-alpine
-
-WORKDIR /go/src/github.com/seannguyen/coin-tracker
-COPY . .
+FROM golang:1.11.1-alpine
 
 RUN apk update && \
     apk upgrade && \
     apk add git postgresql gcc g++ openssl ca-certificates wget && \
     update-ca-certificates
-RUN go get -d -t -v ./...
-RUN go get -v github.com/volatiletech/sqlboiler
+
 RUN go get -v github.com/pressly/goose/cmd/goose
-RUN cd ../ && rm -rf ./coin-tracker
 
 ENTRYPOINT ["sh"]

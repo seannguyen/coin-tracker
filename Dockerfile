@@ -2,9 +2,8 @@
 FROM seannguyen/coin-tracker-build-base as build-base
 
 WORKDIR /go/src/github.com/seannguyen/coin-tracker
-COPY . .
 
-RUN go get -d -v ./...
+COPY . .
 RUN  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags '-w -extldflags "-static"' -o coin-tracker main.go
 
 # package binary
