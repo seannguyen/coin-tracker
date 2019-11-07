@@ -23,6 +23,7 @@ func main() {
 }
 
 func initConfigs() {
+	log.SetOutput(os.Stdout)
 	log.Println("Initializing configs")
 	viper.AutomaticEnv()
 	viper.SetConfigName("config")
