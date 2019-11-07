@@ -12,7 +12,7 @@ pycrypto==2.6.1
 pydash==4.1.0
 pyparsing==2.2.0
 -e git+https://github.com/ericsomdahl/python-bittrex@a0ca464a42eb6b5533dae036a6f4eee3b2a313e8#egg=python_bittrex
-PyYAML==3.12
+PyYAML==5.1
 raven==6.1.0
 redis==2.10.5
 requests==2.13.0
