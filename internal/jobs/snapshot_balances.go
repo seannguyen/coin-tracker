@@ -2,8 +2,10 @@ package jobs
 
 import (
 	"database/sql"
+	"log"
+
 	"github.com/gocraft/work"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // import for the usage of postgresql
 	"github.com/seannguyen/coin-tracker/internal/services/cmc"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bitfinex"
@@ -15,9 +17,9 @@ import (
 	"github.com/spf13/viper"
 	"github.com/volatiletech/sqlboiler/boil"
 	"gopkg.in/volatiletech/null.v6"
-	"log"
 )
 
+// SnapshotBalances pull balances from sources and save them into the DB
 func SnapshotBalances(_ *work.Job) error {
 	db := initDatabase()
 	defer func() {
@@ -69,10 +71,11 @@ func saveBalancesSnapshot(db *sql.DB, balancesData []*cryto_exchanges.BalanceDat
 	}
 	defer func() {
 		var trxErr error
-		if err == nil {
-			trxErr = transaction.Commit()
-		} else {
+		if r := recover(); r != nil {
+			log.Println("abandon transaction, recovered from ", r)
 			trxErr = transaction.Rollback()
+		} else {
+			trxErr = transaction.Commit()
 		}
 		if trxErr != nil {
 			log.Panic(trxErr)
