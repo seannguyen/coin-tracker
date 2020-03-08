@@ -2,8 +2,10 @@ package jobs
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
+	"github.com/bugsnag/bugsnag-go"
 	"github.com/gocraft/work"
 	_ "github.com/lib/pq" // import for the usage of postgresql
 	"github.com/seannguyen/coin-tracker/internal/services/cmc"
@@ -74,6 +76,7 @@ func saveBalancesSnapshot(db *sql.DB, balancesData []*cryto_exchanges.BalanceDat
 		if r := recover(); r != nil {
 			log.Println("abandon transaction, recovered from ", r)
 			trxErr = transaction.Rollback()
+			bugsnag.Notify(fmt.Errorf("%v", r))
 		} else {
 			trxErr = transaction.Commit()
 		}
