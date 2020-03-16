@@ -18,14 +18,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:e85c733f47f7e633fce4eb46a3b2d3616dd95517dcf670ba36bb6da0394dbf16"
-  name = "github.com/anaskhan96/soup"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "cd07662ec9300d16d2ece1c24b0b29ad89f65ff4"
-  version = "v1.1"
-
-[[projects]]
   branch = "master"
   digest = "1:3872e3f8dc0ce7c649e578b9a758565373c066e2f9c62098b69ded641677c21b"
   name = "github.com/bitfinexcom/bitfinex-api-go"
@@ -54,17 +46,6 @@
   pruneopts = "UT"
   revision = "4009b2b7c78d820cc4a2e42f035bb557ce4ae45b"
   version = "v1.2.0"
-
-[[projects]]
-  branch = "master"
-  digest = "1:4e01cce89c403cebced5f1a22b15c983e1d18b0e9dcd1e14c00965353ddb824f"
-  name = "github.com/coincircle/go-coinmarketcap"
-  packages = [
-    ".",
-    "types",
-  ]
-  pruneopts = "UT"
-  revision = "86a427de333f50fc31470c53bab5d8a02b296ec0"
 
 [[projects]]
   branch = "master"
@@ -287,7 +268,7 @@
   name = "github.com/thebotguys/signalr"
   packages = ["."]
   pruneopts = "UT"
-  revision = "58078e12c98f4d4feb9ad2f992fde4db192de7a0"
+  revision = "787ebe6729fc69294e8d385b21e795cff45a2bea"
 
 [[projects]]
   branch = "master"
@@ -329,17 +310,6 @@
   packages = ["md4"]
   pruneopts = "UT"
   revision = "4d3f4d9ffa16a13f451c3b2999e9c49e9750bf06"
-
-[[projects]]
-  branch = "master"
-  digest = "1:1a1ecfa7b54ca3f7a0115ab5c578d7d6a5d8b605839c549e80260468c42f8be7"
-  name = "golang.org/x/net"
-  packages = [
-    "html",
-    "html/atom",
-  ]
-  pruneopts = "UT"
-  revision = "10aee181995363b41f712a55844a0dd52ea04646"
 
 [[projects]]
   branch = "master"
@@ -398,7 +368,6 @@
     "github.com/Zauberstuhl/go-coinbase",
     "github.com/bitfinexcom/bitfinex-api-go/v1",
     "github.com/bugsnag/bugsnag-go",
-    "github.com/coincircle/go-coinmarketcap",
     "github.com/dgrijalva/jwt-go",
     "github.com/gocraft/work",
     "github.com/gomodule/redigo/redis",
