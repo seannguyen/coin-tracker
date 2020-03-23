@@ -1,22 +1,31 @@
-image: docker:19.03
+image: golang:1.14-alpine3.11
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
+  POSTGRES_USER: root
+  POSTGRES_DB: coin-tracker-test
 
 stages:
+  - test
   - build
   - publish
   - deploy
 
 services:
   - docker:19.03-dind
+  - circleci/postgres:9.6-alpine
+
+test:
+  stage: test
+  script:
+  - goose -dir ./db/migrations postgres "user=root dbname=coin-tracker-test sslmode=disable" up
+  - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="root"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > $ROOTPATH/sqlboiler.toml
+  - go test -v ./...
 
 build:
   stage: build
   script: "docker build -t seannguyen/coin-tracker ."
-  only:
-  - master
 
 push_to_docker_hub:
   stage: publish
