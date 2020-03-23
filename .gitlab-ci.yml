@@ -1,6 +1,6 @@
 image:
   name: seannguyen/coin-tracker-build-base
-  entrypoint: ["bin/sh"]
+  entrypoint: ["/bin/sh"]
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
