@@ -1,4 +1,4 @@
-image: golang:1.14-alpine
+image: golang:1.14
 
 variables:
   REPO_DOMAIN: github.com
@@ -27,10 +27,7 @@ before_script:
 test:
   stage: test
   script:
-  - apk update && \
-    apk upgrade && \
-    apk add git postgresql gcc g++ openssl ca-certificates wget && \
-    update-ca-certificates
+  - apt-get install postgresql
   - go get -v -t -d ./...
   - go get -v github.com/pressly/goose/cmd/goose
   - go get -v github.com/volatiletech/sqlboiler/...
