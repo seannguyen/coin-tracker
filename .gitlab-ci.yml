@@ -1,0 +1,14 @@
+image: seannguyen/coin-tracker-build-base
+
+compile:
+  stage: build
+  scripts: "docker build -v seannguyen/coin-tracker main.go"
+  only:
+  - master
+
+push_to_docker_hub:
+  stage: deploy
+  scripts:
+  - echo Place holder, will publish here
+  only:
+  - master
