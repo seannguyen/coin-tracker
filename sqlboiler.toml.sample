@@ -4,6 +4,6 @@ schema="public"
   dbname="coin-tracker"
   host="localhost"
   port=5432
-  user="seannguyen"
+  user="postgres"
   pass="password12"
   sslmode="disable"
