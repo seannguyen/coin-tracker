@@ -1,4 +1,4 @@
-image: golang:1.14-alpine3.11
+image: golang:1.14
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
