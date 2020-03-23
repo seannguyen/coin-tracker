@@ -3,8 +3,10 @@ image: golang:1.14
 variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
-  POSTGRES_USER: root
+  POSTGRES_USER: runner
   POSTGRES_DB: coin-tracker-test
+  POSTGRES_PASSWORD: ""
+  POSTGRES_HOST_AUTH_METHOD: trust
 
 stages:
   - test
@@ -14,14 +16,14 @@ stages:
 
 services:
   - docker:19.03-dind
-  - circleci/postgres:9.6-alpine
+  - postgres:12.2-alpine
 
 test:
   stage: test
   script:
   - go get -v github.com/pressly/goose/cmd/goose
-  - goose -dir ./db/migrations postgres "host=postgres user=root dbname=coin-tracker-test sslmode=disable" up
-  - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="root"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > $ROOTPATH/sqlboiler.toml
+  - goose -dir ./db/migrations postgres "host=postgres user=runner dbname=coin-tracker-test sslmode=disable" up
+  - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="runner"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > ./sqlboiler.toml
   - go test -v ./...
 
 build:
