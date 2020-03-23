@@ -1,4 +1,4 @@
-image: golang:1.11
+image: golang:1.14
 
 variables:
   REPO_DOMAIN: github.com
