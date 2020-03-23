@@ -1,6 +1,7 @@
 image: golang:1.11
 
 variables:
+  REPO_DOMAIN: github.com
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
   POSTGRES_USER: runner
@@ -17,6 +18,11 @@ stages:
 services:
   - docker:19.03-dind
   - postgres:12.2-alpine
+
+before_script:
+  - mkdir -p $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE
+  - ln -s $CI_PROJECT_DIR $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/
+  - cd $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
 
 test:
   stage: test
