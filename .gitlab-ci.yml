@@ -1,4 +1,4 @@
-image: docker:stable
+image: docker:19.03
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
@@ -8,6 +8,9 @@ stages:
   - build
   - publish
   - deploy
+
+services:
+  - docker:19.03-dind
 
 build:
   stage: build
