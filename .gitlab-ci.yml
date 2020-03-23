@@ -27,8 +27,9 @@ before_script:
 test:
   stage: test
   script:
+  - go get -v -t -d ./...
   - go get -v github.com/pressly/goose/cmd/goose
-  - go get -v github.com/volatiletech/sqlboiler
+  - go get -v github.com/volatiletech/sqlboiler/...
   - goose -dir ./db/migrations postgres "host=postgres user=runner dbname=coin-tracker-test sslmode=disable" up
   - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="runner"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > ./sqlboiler.toml
   - go test -v ./...
