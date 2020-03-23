@@ -20,7 +20,7 @@ test:
   stage: test
   script:
   - go get -v github.com/pressly/goose/cmd/goose
-  - goose -dir ./db/migrations postgres "user=root dbname=coin-tracker-test sslmode=disable" up
+  - goose -dir ./db/migrations postgres "host=postgres user=root dbname=coin-tracker-test sslmode=disable" up
   - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="root"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > $ROOTPATH/sqlboiler.toml
   - go test -v ./...
 
