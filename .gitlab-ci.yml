@@ -19,9 +19,15 @@ services:
   - postgres:12.2-alpine
 
 before_script:
+  # Link repo to the correct location of GOPATH
   - mkdir -p $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE
   - ln -s $CI_PROJECT_DIR $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/
   - cd $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  # Add docker tls to communicate with dockerd
+  - mkdir -p ~/.docker
+  - echo "$DOCKER_CA" > ~/.docker/ca.pem
+  - echo "$DOCKER_CERT" > ~/.docker/cert.pem
+  - echo "$DOCKER_KEY" > ~/.docker/key.pem
 
 test:
   stage: test
@@ -42,10 +48,6 @@ build:
 deploy:
   stage: deploy
   script:
-    - mkdir -p ~/.docker
-    - echo "$DOCKER_CA" > ~/.docker/ca.pem
-    - echo "$DOCKER_CERT" > ~/.docker/cert.pem
-    - echo "$DOCKER_KEY" > ~/.docker/key.pem
     - docker stack deploy --with-registry-auth -c ./docker/stack.yml personal
   only:
     - master
