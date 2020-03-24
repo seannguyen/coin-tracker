@@ -3,7 +3,7 @@ image: docker:19.03
 variables:
   REPO_DOMAIN: github.com
   DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_VERIFY: 1
   POSTGRES_USER: runner
   POSTGRES_DB: coin-tracker-test
   POSTGRES_PASSWORD: ""
@@ -39,3 +39,11 @@ build:
     - docker push $CI_REGISTRY_IMAGE
   only:
     - master
+deploy:
+  stage: deploy
+  script:
+    - mkdir -p ~/.docker
+    - echo "$DOCKER_CA" > ~/.docker/ca.pem
+    - echo "$DOCKER_CERT" > ~/.docker/cert.pem
+    - echo "$DOCKER_KEY" > ~/.docker/key.pem
+    - docker stack deploy --with-registry-auth -c ./docker/stack.yml personal
