@@ -6,6 +6,7 @@ stages:
   - deploy
 
 variables:
+  DOCKER_TLS_CERTDIR: "/certs"
   POSTGRES_USER: runner
   POSTGRES_DB: coin-tracker-test
   POSTGRES_PASSWORD: ""
