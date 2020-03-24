@@ -47,6 +47,8 @@ build:
     - master
 deploy:
   stage: deploy
+  variables:
+    DOCKER_HOST: tcp://134.209.105.98:2376/
   script:
     - docker stack deploy --with-registry-auth -c ./docker/stack.yml personal
   only:
