@@ -47,3 +47,5 @@ deploy:
     - echo "$DOCKER_CERT" > ~/.docker/cert.pem
     - echo "$DOCKER_KEY" > ~/.docker/key.pem
     - docker stack deploy --with-registry-auth -c ./docker/stack.yml personal
+  only:
+    - master
