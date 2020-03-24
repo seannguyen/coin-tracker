@@ -1,4 +1,4 @@
-FROM golang:1.11.1-alpine
+FROM golang:1.14-alpine
 
 RUN apk update && \
     apk upgrade && \
@@ -8,4 +8,4 @@ RUN apk update && \
 RUN go get -v github.com/volatiletech/sqlboiler
 RUN go get -v github.com/pressly/goose/cmd/goose
 
-ENTRYPOINT ["sh"]
+ENTRYPOINT ["/bin/sh"]
