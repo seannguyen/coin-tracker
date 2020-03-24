@@ -38,6 +38,7 @@ build:
     - docker push $CI_REGISTRY_IMAGE
   only:
     - master
+
 deploy:
   stage: deploy
   variables:
