@@ -5,6 +5,12 @@ stages:
   - build
   - deploy
 
+variables:
+  POSTGRES_USER: runner
+  POSTGRES_DB: coin-tracker-test
+  POSTGRES_PASSWORD: ""
+  POSTGRES_HOST_AUTH_METHOD: trust
+
 services:
   - docker:19.03-dind
   - postgres:12.2-alpine
@@ -14,10 +20,6 @@ test:
   image: seannguyen/coin-tracker-build-base
   variables:
     REPO_DOMAIN: github.com
-    POSTGRES_USER: runner
-    POSTGRES_DB: coin-tracker-test
-    POSTGRES_PASSWORD: ""
-    POSTGRES_HOST_AUTH_METHOD: trust
   script:
     # Link repo to the correct location of GOPATH
     - mkdir -p $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE
