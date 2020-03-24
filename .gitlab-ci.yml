@@ -48,6 +48,7 @@ deploy:
     - echo "$DOCKER_CA" > ~/.docker/ca.pem
     - echo "$DOCKER_CERT" > ~/.docker/cert.pem
     - echo "$DOCKER_KEY" > ~/.docker/key.pem
-    - docker stack deploy --with-registry-auth -c ./docker/stack.yml personal
+    - docker pull seannguyen/coin-tracker:latest
+    - docker service update --with-registry-auth --force personal_coin_tracker
   only:
     - master
