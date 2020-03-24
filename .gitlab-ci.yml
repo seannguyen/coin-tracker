@@ -6,6 +6,8 @@ stages:
   - deploy
 
 variables:
+  IMAGE_FULL_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  # postgres service
   POSTGRES_USER: runner
   POSTGRES_DB: coin-tracker-test
   POSTGRES_PASSWORD: ""
@@ -34,8 +36,8 @@ build:
   stage: build
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $CI_REGISTRY_IMAGE .
-    - docker push $CI_REGISTRY_IMAGE
+    - docker build -t $IMAGE_FULL_NAME .
+    - docker push $IMAGE_FULL_NAME
   only:
     - master
 
@@ -49,7 +51,6 @@ deploy:
     - echo "$DOCKER_CA" > ~/.docker/ca.pem
     - echo "$DOCKER_CERT" > ~/.docker/cert.pem
     - echo "$DOCKER_KEY" > ~/.docker/key.pem
-    - docker pull $CI_REGISTRY_IMAGE:latest
-    - docker service update --with-registry-auth --force personal_coin_tracker
+    - docker service update --with-registry-auth --force --image $IMAGE_FULL_NAME personal_coin_tracker
   only:
     - master
