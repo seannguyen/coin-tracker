@@ -28,17 +28,14 @@ test:
   stage: test
   image: seannguyen/coin-tracker-build-base:1.3
   script:
-  - goose -dir ./db/migrations postgres "host=postgres user=runner dbname=coin-tracker-test sslmode=disable" up
-  - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="runner"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > ./sqlboiler.toml
-  - go test -v ./...
+    - goose -dir ./db/migrations postgres "host=postgres user=runner dbname=coin-tracker-test sslmode=disable" up
+    - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="runner"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > ./sqlboiler.toml
+    - go test -v ./...
 
 build:
   stage: build
-  script: "docker build -t seannguyen/coin-tracker ."
-
-push_to_docker_hub:
-  stage: publish
   script:
-  - echo Place holder, will publish here
-  only:
-  - master
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE .
+    - docker push $CI_REGISTRY_IMAGE
+  only: master
