@@ -1,14 +1,5 @@
 image: docker:19.03
 
-variables:
-  REPO_DOMAIN: github.com
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_TLS_VERIFY: 1
-  POSTGRES_USER: runner
-  POSTGRES_DB: coin-tracker-test
-  POSTGRES_PASSWORD: ""
-  POSTGRES_HOST_AUTH_METHOD: trust
-
 stages:
   - test
   - build
@@ -18,27 +9,29 @@ services:
   - docker:19.03-dind
   - postgres:12.2-alpine
 
-before_script:
-  # Link repo to the correct location of GOPATH
-  - mkdir -p $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE
-  - ln -s $CI_PROJECT_DIR $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/
-  - cd $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  # Add docker tls to communicate with dockerd
-  - mkdir -p ~/.docker
-  - echo "$DOCKER_CA" > ~/.docker/ca.pem
-  - echo "$DOCKER_CERT" > ~/.docker/cert.pem
-  - echo "$DOCKER_KEY" > ~/.docker/key.pem
-
 test:
   stage: test
   image: seannguyen/coin-tracker-build-base
+  variables:
+    REPO_DOMAIN: github.com
+    POSTGRES_USER: runner
+    POSTGRES_DB: coin-tracker-test
+    POSTGRES_PASSWORD: ""
+    POSTGRES_HOST_AUTH_METHOD: trust
   script:
+    # Link repo to the correct location of GOPATH
+    - mkdir -p $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE
+    - ln -s $CI_PROJECT_DIR $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/
+    - cd $GOPATH/src/$REPO_DOMAIN/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+    # DB migration and test
     - goose -dir ./db/migrations postgres "host=postgres user=runner dbname=coin-tracker-test sslmode=disable" up
     - echo -e '[postgres]\nhost="postgres"\nport=5432\nuser="runner"\ndbname="coin-tracker-test"\nsslmode="disable"\n' > ./sqlboiler.toml
     - go test -v ./...
 
 build:
   stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE .
@@ -49,7 +42,12 @@ deploy:
   stage: deploy
   variables:
     DOCKER_HOST: tcp://134.209.105.98:2376/
+    DOCKER_TLS_VERIFY: 1
   script:
+    - mkdir -p ~/.docker
+    - echo "$DOCKER_CA" > ~/.docker/ca.pem
+    - echo "$DOCKER_CERT" > ~/.docker/cert.pem
+    - echo "$DOCKER_KEY" > ~/.docker/key.pem
     - docker stack deploy --with-registry-auth -c ./docker/stack.yml personal
   only:
     - master
