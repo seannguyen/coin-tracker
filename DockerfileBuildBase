@@ -7,5 +7,3 @@ RUN apk update && \
 
 RUN go get -v github.com/volatiletech/sqlboiler
 RUN go get -v github.com/pressly/goose/cmd/goose
-
-ENTRYPOINT ["/bin/sh"]
