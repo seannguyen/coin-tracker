@@ -6,9 +6,6 @@ stages:
   - deploy
 
 variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
   POSTGRES_USER: runner
   POSTGRES_DB: coin-tracker-test
   POSTGRES_PASSWORD: ""
@@ -35,9 +32,11 @@ test:
 
 build:
   stage: build
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
+  # variables:
+  #   DOCKER_HOST: tcp://docker:2375/
   script:
+    - env
+    - nslookup docker
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE .
     - docker push $CI_REGISTRY_IMAGE
