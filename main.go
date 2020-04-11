@@ -42,6 +42,7 @@ func initConfigs() {
 func initBugsnag() {
 	bugsnag.Configure(bugsnag.Configuration{
 		APIKey:          viper.GetString("BUGSNAG_API_KEY"),
+		ReleaseStage:    viper.GetString("ENV"),
 		ProjectPackages: []string{"main", "github.com/seannguyen/coin-tracker"},
 	})
 }
