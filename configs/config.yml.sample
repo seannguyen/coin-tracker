@@ -1,10 +1,6 @@
 ENV: "development"
 DB_CONNECTION_STRING: "host=localhost port=5432 user=postgres password=password12 dbname=coin-tracker sslmode=disable"
 
-REDIS_ADDRESS: "localhost:6379"
-REDIS_PASSWORD: ""
-REDIS_DB: "0"
-
 BUGSNAG_API_KEY: ""
 
 BITTREX_API_KEY: ""
