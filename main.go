@@ -4,28 +4,32 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
+	"syscall"
+	"time"
 
 	"github.com/bugsnag/bugsnag-go"
-	"github.com/gocraft/work"
-	"github.com/gomodule/redigo/redis"
 	"github.com/seannguyen/coin-tracker/internal/jobs"
 	"github.com/seannguyen/coin-tracker/internal/utilities"
 	"github.com/spf13/viper"
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-type Context struct{}
-
 func main() {
-	defer bugsnag.AutoNotify()
 	initConfigs()
-	redisPool := createRedisPool()
-	initJobs(redisPool)
+
+	stopSignal := getStopSignalChan()
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	startJob(stopSignal, wg)
+
+	wg.Wait()
+	log.Println("Server shuted down")
 }
 
 func initConfigs() {
 	log.SetOutput(os.Stdout)
-	log.Println("Initializing configs")
+
 	viper.AutomaticEnv()
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./configs")
@@ -33,79 +37,57 @@ func initConfigs() {
 	if err != nil {
 		log.Panicln(err)
 	}
+
 	if utilities.IsDevelopment() {
 		boil.DebugMode = true
 	}
-	initBugsnag()
-}
 
-func initBugsnag() {
 	bugsnag.Configure(bugsnag.Configuration{
-		APIKey:          viper.GetString("BUGSNAG_API_KEY"),
-		ReleaseStage:    viper.GetString("ENV"),
-		ProjectPackages: []string{"main", "github.com/seannguyen/coin-tracker"},
+		APIKey:       viper.GetString("BUGSNAG_API_KEY"),
+		ReleaseStage: viper.GetString("ENV"),
 	})
+
+	log.Println("Initialized configs")
 }
 
-func initJobs(redisPool *redis.Pool) {
-	log.Println("Initializing jobs")
-	pool := work.NewWorkerPool(Context{}, 2, "coin-tracker", redisPool)
+func getStopSignalChan() <-chan struct{} {
+	terminate := make(chan os.Signal)
+	signal.Notify(terminate, os.Interrupt, syscall.SIGTERM)
+	stop := make(chan struct{})
 
-	pool.Middleware(logJobStartEvent)
-	pool.Middleware(reportBugsnag)
+	go func() {
+		<-terminate
+		close(stop)
+	}()
 
-	pool.JobWithOptions("snapshot_balances", work.JobOptions{MaxConcurrency: 1}, jobs.SnapshotBalances)
-	pool.PeriodicallyEnqueue("0 */5 * * * *", "snapshot_balances")
-	pool.Start()
-
-	// Wait for a signal to quit:
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt, os.Kill)
-	<-signalChan
-
-	// Stop the pool
-	pool.Stop()
-	redisPool.Close()
+	return stop
 }
 
-func logJobStartEvent(job *work.Job, next work.NextMiddlewareFunc) error {
-	log.Printf("Starting job: %s", job.Name)
-	return next()
-}
-
-func reportBugsnag(_ *work.Job, next work.NextMiddlewareFunc) error {
-	defer bugsnag.AutoNotify()
-	err := next()
-	if err != nil {
-		bugsnag.Notify(err)
-	}
-	return err
-}
-
-func createRedisPool() *redis.Pool {
-	log.Println("Creating redis connection pool")
-	return &redis.Pool{
-		MaxActive: 5,
-		MaxIdle:   5,
-		Wait:      true,
-		Dial: func() (redis.Conn, error) {
-			connection, err := redis.Dial("tcp", viper.GetString("REDIS_ADDRESS"))
-			if err != nil {
-				connection.Close()
-				return nil, err
+func startJob(stop <-chan struct{}, wg *sync.WaitGroup) {
+	ticker := time.NewTicker(5 * time.Minute)
+	go func() {
+		execJob()
+		for {
+			select {
+			case <-stop:
+				ticker.Stop()
+				wg.Done()
+				log.Println("Interval job stopped")
+				return
+			case <-ticker.C:
+				execJob()
 			}
-			password := viper.GetString("REDIS_PASSWORD")
-			if len(password) > 0 {
-				if _, err := connection.Do("AUTH", password); err != nil {
-					connection.Close()
-					return nil, err
-				}
-			}
-			if _, err := connection.Do("SELECT", viper.GetString("REDIS_DB")); err != nil {
-				connection.Close()
-				return nil, err
-			}
-			return connection, nil
-		},
-	}
+		}
+	}()
+	log.Println("Interval job started")
+}
+
+func execJob() {
+	defer func() {
+		if r := recover(); r != nil {
+			bugsnag.Notify(r.(error))
+		}
+	}()
+
+	jobs.SnapshotBalances()
 }

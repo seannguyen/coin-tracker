@@ -83,25 +83,6 @@
   version = "v1.4.0"
 
 [[projects]]
-  digest = "1:615643b442214e7a9bade98fa7d50ec072fd17bdc5c955daa194b32e73a532a8"
-  name = "github.com/gocraft/work"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "1d4117a214abff263b472043871c8666aedb716b"
-  version = "v0.5.1"
-
-[[projects]]
-  digest = "1:38ec74012390146c45af1f92d46e5382b50531247929ff3a685d2b2be65155ac"
-  name = "github.com/gomodule/redigo"
-  packages = [
-    "internal",
-    "redis",
-  ]
-  pruneopts = "UT"
-  revision = "9c11da706d9b7902c6da69c592f75637793fe121"
-  version = "v2.0.0"
-
-[[projects]]
   digest = "1:7b5c6e2eeaa9ae5907c391a91c132abfd5c9e8a784a341b5625e750c67e6825d"
   name = "github.com/gorilla/websocket"
   packages = ["."]
@@ -194,14 +175,6 @@
   pruneopts = "UT"
   revision = "012e82b838f1b0ebd7b32acc842ba8a9ca20df05"
   version = "v0.3.6"
-
-[[projects]]
-  digest = "1:ed615c5430ecabbb0fb7629a182da65ecee6523900ac1ac932520860878ffcad"
-  name = "github.com/robfig/cron"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "b41be1df696709bb6395fe435af20370037c0b4c"
-  version = "v1.1"
 
 [[projects]]
   digest = "1:a3b8912deeef29007fab9a13a9f21b9e9b59c621a2ed61e2fe7b37320a71fbd5"
@@ -369,8 +342,6 @@
     "github.com/bitfinexcom/bitfinex-api-go/v1",
     "github.com/bugsnag/bugsnag-go",
     "github.com/dgrijalva/jwt-go",
-    "github.com/gocraft/work",
-    "github.com/gomodule/redigo/redis",
     "github.com/kat-co/vala",
     "github.com/lib/pq",
     "github.com/pkg/errors",

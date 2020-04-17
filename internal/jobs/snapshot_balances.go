@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/bugsnag/bugsnag-go"
-	"github.com/gocraft/work"
 	_ "github.com/lib/pq" // import for the usage of postgresql
 	"github.com/seannguyen/coin-tracker/internal/services/cmc"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges"
@@ -22,7 +21,7 @@ import (
 )
 
 // SnapshotBalances pull balances from sources and save them into the DB
-func SnapshotBalances(_ *work.Job) error {
+func SnapshotBalances() error {
 	db := initDatabase()
 	defer func() {
 		err := db.Close()
