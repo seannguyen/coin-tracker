@@ -16,3 +16,4 @@ Test
 ```bash
 goose -dir db/migrations/ postgres "host=localhost database=coin-tracker-test user=postgres password=password12 sslmode=disable" up
 ```
+
