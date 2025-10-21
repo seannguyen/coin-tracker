@@ -13,6 +13,7 @@ import (
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/bittrex"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/coinbase"
 	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/liquid"
+	"github.com/seannguyen/coin-tracker/internal/services/cryto_exchanges/okx"
 	"github.com/seannguyen/coin-tracker/internal/services/fiat_exchange"
 	"github.com/seannguyen/coin-tracker/models"
 	"github.com/spf13/viper"
@@ -52,6 +53,7 @@ func getAllExchanges() []cryto_exchanges.ExchangeInterface {
 		&liquid.Exchange{},
 		&coinbase.Exchange{},
 		&bitfinex.Exchange{},
+		&okx.Exchange{},
 	}
 }
 

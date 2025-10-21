@@ -74,6 +74,10 @@
   name = "github.com/toorop/go-bittrex"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/amir-the-h/okex"
+
+[[constraint]]
   name = "github.com/volatiletech/sqlboiler"
   version = "2.7.4"
 
